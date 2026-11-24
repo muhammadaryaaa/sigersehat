@@ -24,14 +24,16 @@ export function ScreeningPage() {
   const setM = (k: string) => (e: { target: { value: string } }) => setMm({ ...mm, [k]: e.target.value });
   async function submit(e: FormEvent) {
     e.preventDefault(); setBusy(true); setError("");
+    let stage = "membuat sesi skrining";
     try {
       const session = await apiMutate<{ session_id: string }>("/api/v1/screening/sessions", "POST", { profileId, instrumentId: selected!.id });
+      stage = "menghitung hasil skrining";
       const numeric: Record<string, number | null> = {};
       for (const [k, v] of Object.entries(mm)) if (k !== "sugarContext") numeric[k] = v === "" ? null : Number(v);
       const res = await apiMutate<Result>(`/api/v1/screening/sessions/${session.session_id}/complete`, "POST", { measurements: { ...numeric, sugarContext: mm.sugarContext }, answers, idempotencyKey: crypto.randomUUID() });
       setResult(res);
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : `Skrining tidak dapat diselesaikan. Sebab: ${err instanceof Error ? err.message : "kesalahan tidak dikenal"}. Periksa koneksi Anda lalu coba lagi.`);
+      setError(err instanceof ApiClientError ? err.message : `Skrining tidak dapat diselesaikan saat ${stage}. Sebab: ${err instanceof Error ? `${err.name}: ${err.message}` : "kesalahan tidak dikenal"}. Periksa koneksi Anda lalu coba lagi.`);
     } finally { setBusy(false); }
   }
   if (result) return (

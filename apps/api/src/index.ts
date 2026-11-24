@@ -23,8 +23,8 @@ type Bindings = { DB: D1Database; FILES: R2Bucket; APP_ORIGIN: string; APP_ENV: 
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.use("*", errorMiddleware);
-app.use("/api/*", csrfMiddleware);
 app.use("/api/*", cors({ origin: (origin, c) => (origin === c.env.APP_ORIGIN ? origin : null), credentials: true }));
+app.use("/api/*", csrfMiddleware);
 
 // Halaman akar API: informasi layanan agar alamat dasar tidak tampil sebagai galat.
 app.get("/", (c) => c.json({ data: { service: "SIGERSEHAT API", status: "online", website: "https://sigersehat.pages.dev", health: "/health", api_base: "/api/v1", documentation: "https://github.com/muhammadaryaaa/sigersehat/blob/main/docs/API.md" } }));

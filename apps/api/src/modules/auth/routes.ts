@@ -42,7 +42,7 @@ authRoutes.post("/register", async (c) => {
   const result = await registerUser(c.env.DB, { email, password, fullName, birthDate, sex, regionId, accountType, profession, credentialType, credentialNumber, workplaceName: typeof body.workplaceName === "string" ? body.workplaceName : undefined });
   const session = await createSession(c.env.DB, result.userId, meta(c));
   for (const cookie of sessionCookies(c.env, session.token, session.csrf)) c.header("Set-Cookie", cookie, { append: true });
-  return c.json({ data: { user_id: result.userId, role: result.role, profile_id: result.profileId } }, 201);
+  return c.json({ data: { user_id: result.userId, role: result.role, profile_id: result.profileId, csrf_token: session.csrf } }, 201);
 });
 
 authRoutes.post("/login", async (c) => {
@@ -53,7 +53,7 @@ authRoutes.post("/login", async (c) => {
   const user = await loginUser(c.env.DB, email, password, meta(c));
   const session = await createSession(c.env.DB, user.id, meta(c));
   for (const cookie of sessionCookies(c.env, session.token, session.csrf)) c.header("Set-Cookie", cookie, { append: true });
-  return c.json({ data: { user_id: user.id, role: user.role } });
+  return c.json({ data: { user_id: user.id, role: user.role, csrf_token: session.csrf } });
 });
 
 authRoutes.post("/logout", requireAuth, async (c) => {
@@ -76,7 +76,11 @@ authRoutes.get("/me", requireAuth, async (c) => {
   const hw = actor.role === "nakes"
     ? await c.env.DB.prepare("SELECT profession, verification_status FROM health_worker_profiles WHERE user_id = ?").bind(actor.id).first()
     : null;
-  return c.json({ data: { user, profile, health_worker: hw } });
+  // Token CSRF digaungkan dari cookie permintaan: halaman web berjalan di domain
+  // berbeda dari API sehingga tidak dapat membaca cookie API lewat document.cookie;
+  // token disimpan frontend di memori saja (bukan localStorage).
+  const csrfToken = (c.req.header("Cookie") ?? "").match(/csrf_token=([^;]+)/)?.[1] ?? null;
+  return c.json({ data: { user, profile, health_worker: hw, csrf_token: csrfToken } });
 });
 
 authRoutes.get("/sessions", requireAuth, async (c) => {
