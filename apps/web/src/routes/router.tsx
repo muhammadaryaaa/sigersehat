@@ -15,6 +15,11 @@ import { HistoryPage } from "../pages/HistoryPage";
 import { EduPage, ArticlePage, QuizPage } from "../pages/EduPages";
 import { AiPage } from "../pages/AiPage";
 import { AdminEduPage } from "../pages/AdminEduPage";
+import { FamilyPage } from "../pages/FamilyPage";
+import { WomenPage } from "../pages/WomenPage";
+import { GrowPage } from "../pages/GrowPage";
+import { ElderPage } from "../pages/ElderPage";
+import { NutriPage } from "../pages/NutriPage";
 import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -33,7 +38,11 @@ export const router = createBrowserRouter([
   { path: "/pantau", element: <ProtectedRoute roles={["masyarakat"]}><MonitorPage /></ProtectedRoute> },
   { path: "/pengingat", element: <ProtectedRoute roles={["masyarakat"]}><ReminderPage /></ProtectedRoute> },
   { path: "/riwayat", element: <ProtectedRoute roles={["masyarakat"]}><HistoryPage /></ProtectedRoute> },
-  { path: "/keluarga", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Keluargaku" /></ProtectedRoute> },
+  { path: "/keluarga", element: <ProtectedRoute roles={["masyarakat"]}><FamilyPage /></ProtectedRoute> },
+  { path: "/perempuan", element: <ProtectedRoute roles={["masyarakat"]}><WomenPage /></ProtectedRoute> },
+  { path: "/tumbuh", element: <ProtectedRoute roles={["masyarakat"]}><GrowPage /></ProtectedRoute> },
+  { path: "/lansia", element: <ProtectedRoute roles={["masyarakat"]}><ElderPage /></ProtectedRoute> },
+  { path: "/gizi", element: <ProtectedRoute roles={["masyarakat"]}><NutriPage /></ProtectedRoute> },
   { path: "/tanya", element: <ProtectedRoute roles={["masyarakat"]}><AiPage /></ProtectedRoute> },
   { path: "/izin", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Izin & Privasi" /></ProtectedRoute> },
   { path: "/nakes/beranda", element: <ProtectedRoute roles={["nakes"]}><DashboardNakes /></ProtectedRoute> },
