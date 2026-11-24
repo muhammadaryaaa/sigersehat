@@ -1,15 +1,38 @@
 import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 
-// Halaman informasi & legal. Isi ditulis dari fakta proyek yang terverifikasi;
-// nama penyelenggara dan kontak resmi adalah SLOT yang menunggu penetapan
-// pemilik platform — sengaja tidak dikarang (lihat laporan revisi visual).
-
+// Halaman informasi & legal (konsistensi putaran 2): pita judul bersama,
+// lebar baris nyaman, dan daftar isi lengket yang dibangun otomatis dari
+// subjudul halaman (desktop). Isi ditulis dari fakta proyek terverifikasi.
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [toc, setToc] = useState<{ id: string; text: string }[]>([]);
+  useEffect(() => {
+    const root = bodyRef.current; if (!root) return;
+    const heads = [...root.querySelectorAll("h2")];
+    heads.forEach((h, i) => { h.id = `bagian-${i + 1}`; h.classList.add("scroll-mt-28"); });
+    setToc(heads.map((h, i) => ({ id: `bagian-${i + 1}`, text: h.textContent ?? "" })));
+  }, []);
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-3xl font-bold md:text-4xl">{title}</h1>
-      <div className="mt-6 flex flex-col gap-5 leading-relaxed">{children}</div>
-    </main>
+    <>
+      <PageHeader title={title} />
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
+          {toc.length > 2 ? (
+            <nav aria-label="Daftar isi" className="hidden lg:block">
+              <div className="sticky top-28 rounded-card border border-line bg-white p-4 shadow-card">
+                <p className="text-sm font-bold uppercase tracking-wide text-ink-500">Daftar isi</p>
+                <ol className="mt-2 flex list-decimal flex-col gap-1.5 pl-4 text-[15px]">
+                  {toc.map((t) => <li key={t.id}><a className="text-brand-800 hover:underline" href={`#${t.id}`}>{t.text}</a></li>)}
+                </ol>
+              </div>
+            </nav>
+          ) : <span className="hidden lg:block" />}
+          <div ref={bodyRef} className="flex max-w-3xl flex-col gap-5 leading-relaxed">{children}</div>
+        </div>
+      </main>
+    </>
   );
 }
 
@@ -26,9 +49,16 @@ export function AboutPage() {
         <li>Pengingat jadwal kontrol, imunisasi, dan pemeriksaan berkala di dalam website.</li>
       </ul>
       <h2 className="text-2xl font-bold">Penyelenggara dan kontak</h2>
-      <p>Nama penyelenggara, susunan tim, dan kontak resmi platform ini sedang disiapkan oleh pemilik platform dan akan ditampilkan di halaman ini setelah ditetapkan. Untuk sementara, pertanyaan dan laporan kesalahan data fasilitas dapat disampaikan melalui fitur laporan pada halaman <Link to="/peta" className="font-semibold text-brand-800 underline">Peta Fasilitas Kesehatan</Link>.</p>
+      <p>Platform ini dikembangkan dan dikelola oleh <strong>Kelompok Ditolak UGM</strong>, beranggotakan:</p>
+      <ul>
+        <li>Muhammad Arya Putra</li>
+        <li>Nabilatus Salamah</li>
+        <li>Mutia Afif Ramadhani</li>
+        <li>Nazwa Tsabitha Putri HI</li>
+      </ul>
+      <p>Kontak resmi (email) belum ditetapkan kelompok; untuk sementara, pertanyaan dan laporan kesalahan data fasilitas dapat disampaikan melalui fitur laporan pada halaman <Link to="/peta" className="font-semibold text-brand-800 underline">Peta Fasilitas Kesehatan</Link>. Konten edukasi disusun dari sumber Kemenkes RI dan WHO; penelaah konten bernama belum ditetapkan — artikel mencantumkan sumber dan tanggal terbitnya, dan mekanisme terbit mewajibkan penelaahan internal tercatat di sistem admin.</p>
       <h2 className="text-2xl font-bold">Sumber data</h2>
-      <p>Angka dan rujukan kesehatan di platform ini berasal dari dokumen resmi: Survei Kesehatan Indonesia 2023 (Kemenkes RI), Profil Kesehatan Provinsi Lampung 2023 (Dinas Kesehatan Provinsi Lampung), statistik BPS Provinsi Lampung 2024, dan pedoman WHO. Setiap angka ditampilkan bersama sumber dan tahunnya. Data fasilitas kesehatan bersumber dari OpenStreetMap dan diverifikasi per titik.</p>
+      <p>Angka dan rujukan kesehatan di platform ini berasal dari dokumen resmi: Survei Kesehatan Indonesia 2023 (Kemenkes RI), Profil Kesehatan Provinsi Lampung 2023 (Dinas Kesehatan Provinsi Lampung), statistik BPS Provinsi Lampung 2024, dan pedoman WHO. Setiap angka ditampilkan bersama sumber dan tahunnya. Data fasilitas kesehatan bersumber dari OpenStreetMap (impor massal berkala per kabupaten/kota, ditambah titik kurasi terverifikasi).</p>
       <h2 className="text-2xl font-bold">Program kesehatan resmi yang dapat diakses warga</h2>
       <ul className="list-disc pl-5">
         <li><strong>Cek Kesehatan Gratis (Kemenkes RI)</strong> — program pemeriksaan kesehatan gratis di puskesmas yang berjalan sejak Februari 2025. Informasi resmi: <a href="https://kemkes.go.id" target="_blank" rel="noreferrer" className="font-semibold text-brand-800 underline">kemkes.go.id</a>.</li>
@@ -55,7 +85,7 @@ export function ServiceLimitsPage() {
       <h2 className="text-2xl font-bold">Keadaan darurat</h2>
       <p>Untuk nyeri dada, sesak napas berat, penurunan kesadaran, kelemahan mendadak pada satu sisi tubuh, gangguan bicara mendadak, atau perdarahan hebat: <strong>hubungi 119 atau datangi IGD terdekat segera</strong>. Jangan menunggu jawaban dari platform ini.</p>
       <h2 className="text-2xl font-bold">Data fasilitas kesehatan</h2>
-      <p>Peta menampilkan <strong>sebagian fasilitas terpilih</strong> yang telah diverifikasi satu per satu — bukan direktori lengkap seluruh Lampung. Alamat dan koordinat bersumber dari OpenStreetMap dengan tanggal verifikasi yang ditampilkan. Nomor telepon dan jam layanan hanya ditampilkan bila terverifikasi; bila tidak tercantum, artinya belum terverifikasi, bukan tidak ada.</p>
+      <p>Peta memuat fasilitas kesehatan dari <strong>data terbuka OpenStreetMap</strong> untuk seluruh 15 kabupaten/kota di Lampung, ditambah sejumlah titik kurasi yang diverifikasi satu per satu. Jumlah termuat dan tanggal pembaruan data ditampilkan di halaman peta; data ini <strong>bukan direktori resmi yang lengkap</strong> — fasilitas dapat berubah, pindah, atau belum terpetakan. Nomor telepon dan jam layanan hanya ditampilkan bila ada di sumber data; bila tidak tercantum, artinya belum tersedia di sumber, bukan tidak ada. Kesalahan dapat dilaporkan dari halaman peta.</p>
       <h2 className="text-2xl font-bold">Perangkat IoT</h2>
       <p>Platform dapat menerima data dari perangkat yang didaftarkan pengguna (misalnya oksimeter dan termometer berbasis ESP32). Perangkat prototipe tersebut <strong>bukan alat medis tervalidasi</strong>. Bila tidak ada perangkat fisik, fitur simulator menampilkan data contoh yang selalu berlabel SIMULASI. Rencana integrasi perangkat yang lebih luas dijelaskan di halaman Perangkat IoT setelah Anda masuk.</p>
       <h2 className="text-2xl font-bold">Ketepatan informasi</h2>

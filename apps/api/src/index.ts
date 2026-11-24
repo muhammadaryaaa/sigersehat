@@ -7,6 +7,7 @@ import { profilesRoutes, dashboardRoutes } from "./modules/profiles/routes";
 import { checkRoutes } from "./modules/check/routes";
 import { monitorRoutes } from "./modules/monitor/routes";
 import { aiRoutes } from "./modules/ai/routes";
+import { guestRoutes } from "./modules/guest/routes";
 import { eduPublicRoutes, eduUserRoutes, eduAdminRoutes } from "./modules/edu/routes";
 import { womenRoutes } from "./modules/women/routes";
 import { growRoutes } from "./modules/grow/routes";
@@ -43,6 +44,7 @@ app.get("/api/v1/regions", async (c) => {
 
 const api = new Hono<{ Bindings: Bindings }>();
 api.route("/auth", authRoutes); api.route("/profiles", profilesRoutes);
+api.route("/guest", guestRoutes);
 api.route("/screening", checkRoutes); api.route("/measurements", monitorRoutes);
 api.route("/ai", aiRoutes); api.route("/edu", eduPublicRoutes); api.route("/edu", eduUserRoutes); api.route("/edu/admin", eduAdminRoutes);
 api.route("/women", womenRoutes); api.route("/grow", growRoutes);

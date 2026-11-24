@@ -4,7 +4,9 @@ import { apiFetch, ApiClientError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
 import { TextField } from "../components/ui/TextField";
-import { homeForRole } from "./LoginPage";
+import { homeForRole, safeNext } from "./LoginPage";
+import { AuthLayout } from "../components/ui/AuthLayout";
+import { useSearchParams } from "react-router-dom";
 
 type Region = { id: string; name: string; type: string };
 export function RegisterPage() {
@@ -13,13 +15,15 @@ export function RegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
   const navigate = useNavigate(); const { refresh } = useAuth();
+  const [params] = useSearchParams(); const next = safeNext(params.get("next"));
+  const [consent, setConsent] = useState(false);
   useEffect(() => { fetch("/api/v1/regions").then((r) => r.json()).then((j) => setRegions(j.data ?? [])).catch(() => {}); }, []);
   const set = (k: string) => (e: { target: { value: string } }) => setForm({ ...form, [k]: e.target.value });
   async function submit(e: FormEvent) {
     e.preventDefault(); setBusy(true); setError(""); setFieldErrors({});
     try {
-      const res = await apiFetch<{ role: string }>("/api/v1/auth/register", { method: "POST", body: JSON.stringify({ ...form, regionId: form.regionId || null }) });
-      await refresh(); navigate(homeForRole(res.role));
+      const res = await apiFetch<{ role: string }>("/api/v1/auth/register", { method: "POST", body: JSON.stringify({ ...form, regionId: form.regionId || null, healthConsent: consent }) });
+      await refresh(); navigate(next ?? homeForRole(res.role));
     } catch (err) {
       if (err instanceof ApiClientError) {
         setError(err.message);
@@ -31,10 +35,8 @@ export function RegisterPage() {
   const labelCls = "text-sm font-medium";
   const selectCls = "min-h-12 w-full rounded-btn border border-line bg-white px-3 text-base";
   return (
-    <main className="mx-auto max-w-md px-4 py-10">
-      <p className="text-xl font-extrabold tracking-tight text-brand-800">SIGERSEHAT</p>
-      <h1 className="mt-4 text-3xl font-bold">Daftar</h1>
-      <form onSubmit={submit} className="mt-6 flex flex-col gap-4" noValidate>
+    <AuthLayout title="Daftar">
+      <form onSubmit={submit} className="mt-5 flex flex-col gap-4" noValidate>
         <div className="flex flex-col gap-1.5"><label className={labelCls} htmlFor="accountType">Jenis akun</label>
           <select id="accountType" className={selectCls} value={form.accountType} onChange={set("accountType")}>
             <option value="masyarakat">Masyarakat</option><option value="nakes">Tenaga Kesehatan</option>
@@ -61,10 +63,16 @@ export function RegisterPage() {
           <TextField label="Tempat praktik/kerja" value={form.workplaceName} onChange={set("workplaceName")} />
           <p className="rounded-card bg-info-50 p-3 text-sm text-info-800">Akun tenaga kesehatan aktif setelah kredensial diverifikasi administrator. Unggah dokumen kredensial menyusul dari halaman status verifikasi.</p>
         </> : null}
+        <label className="flex cursor-pointer items-start gap-3 rounded-card border border-line bg-cream p-4 text-[15px]">
+          <input type="checkbox" className="mt-1 h-5 w-5 shrink-0 accent-[#0e5a4f]" checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-describedby="consent-note" />
+          <span>Saya menyetujui data kesehatan yang saya masukkan disimpan di akun saya untuk keperluan skrining, pemantauan, dan pengingat, sesuai <Link to="/kebijakan-privasi" className="font-semibold text-brand-800 underline">Kebijakan Privasi</Link> (UU No. 27 Tahun 2022). Persetujuan dapat dicabut dan akun beserta data dapat saya hapus sendiri kapan saja.</span>
+        </label>
+        {fieldErrors.healthConsent ? <p role="alert" className="text-sm text-danger-700">{fieldErrors.healthConsent}</p> : null}
+        <p id="consent-note" className="text-sm text-ink-500">Centang ini tidak dicentang otomatis — akun hanya dibuat bila kamu menyetujuinya.</p>
         {error ? <p role="alert" className="rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
-        <Button type="submit" disabled={busy}>{busy ? "Memproses…" : "Daftar"}</Button>
+        <Button type="submit" disabled={busy || !consent}>{busy ? "Memproses…" : "Daftar"}</Button>
       </form>
-      <p className="mt-4 text-sm">Sudah punya akun? <Link className="text-brand-700 underline" to="/masuk">Masuk</Link></p>
-    </main>
+      <p className="mt-4 text-sm">Sudah punya akun? <Link className="font-semibold text-brand-800 underline" to={next ? `/masuk?next=${encodeURIComponent(next)}` : "/masuk"}>Masuk</Link></p>
+    </AuthLayout>
   );
 }

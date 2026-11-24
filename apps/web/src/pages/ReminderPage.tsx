@@ -3,6 +3,7 @@ import { formatDateTime } from "../lib/format";
 import { apiFetch } from "../lib/api";
 import { apiMutate, useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
+import { PageHeader } from "../components/ui/PageHeader";
 import { TextField } from "../components/ui/TextField";
 
 type Reminder = { id: string; title: string; scheduled_at: string; status: string; reminder_type: string };
@@ -32,8 +33,8 @@ export function ReminderPage() {
   const upcoming = items.filter((r) => ["scheduled", "snoozed", "sent"].includes(r.status));
   const done = items.filter((r) => ["done", "cancelled"].includes(r.status));
   return (
+    <> <PageHeader title="Pengingat" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Pengingat</h1>
       {notifs.some((n) => !n.is_read) ? <section aria-labelledby="notif" className="mt-6">
         <h2 id="notif" className="text-xl font-bold">Notifikasi</h2>
         <ul className="mt-3 flex flex-col gap-2">{notifs.filter((n) => !n.is_read).map((n) => <li key={n.id} className="flex flex-wrap items-center justify-between gap-3 rounded-card bg-warn-50 p-4 text-warn-800">
@@ -60,6 +61,6 @@ export function ReminderPage() {
       </section>
       {done.length ? <section aria-labelledby="selesai" className="mt-8"><h2 id="selesai" className="text-xl font-bold">Selesai &amp; Dibatalkan</h2>
         <ul className="mt-3 flex flex-col gap-2">{done.map((r) => <li key={r.id} className="rounded-card border border-line bg-white p-4 text-ink-600">{r.title} — {formatDateTime(r.scheduled_at)} ({r.status === "done" ? "Selesai" : "Dibatalkan"})</li>)}</ul></section> : null}
-    </main>
+    </main></>
   );
 }

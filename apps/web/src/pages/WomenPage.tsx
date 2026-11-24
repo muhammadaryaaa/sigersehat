@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -53,8 +54,8 @@ export function WomenPage() {
     catch { setError("Kunjungan tidak dapat diselesaikan."); }
   }
   return (
+    <> <PageHeader title="Kesehatan Perempuan" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Kesehatan Perempuan</h1>
       <p className="mt-2 text-ink-600">Data siklus dan kehamilan bersifat privat: hanya tampil untuk pemilik profil dan tidak muncul di ringkasan keluarga.</p>
       <div className="mt-4 flex flex-col gap-1.5"><label className="text-sm font-medium" htmlFor="wp">Profil perempuan</label>
         <select id="wp" className="min-h-12 rounded-btn border border-line bg-white px-3" value={profileId} onChange={(e) => setProfileId(e.target.value)}>
@@ -94,6 +95,6 @@ export function WomenPage() {
           <Button variant="secondary" onClick={() => addVisit(p)}>Tambah Kunjungan</Button>
         </div>)}
       </section>
-    </main>
+    </main></>
   );
 }

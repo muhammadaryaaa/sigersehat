@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
+import { PageHeader } from "../components/ui/PageHeader";
 import { TextField } from "../components/ui/TextField";
 
 type Profile = { id: string; full_name: string; relation: string; birth_date: string; sex: string };
@@ -24,8 +25,8 @@ export function FamilyPage() {
     catch { setError("Profil tidak dapat dinonaktifkan."); }
   }
   return (
+    <> <PageHeader title="Keluargaku" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Keluargaku</h1>
       <p className="mt-2 text-ink-600">Kelola profil anggota keluarga yang Anda dampingi. Data anak hanya dibuat dengan persetujuan Anda sebagai orang tua/wali.</p>
       {notice ? <p role="status" className="mt-4 rounded-card bg-brand-50 p-3 text-brand-800">{notice}</p> : null}
       {error ? <p role="alert" className="mt-4 rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
@@ -57,6 +58,6 @@ export function FamilyPage() {
           <div className="sm:col-span-2"><Button type="submit">Tambah Profil</Button></div>
         </form>
       </section>
-    </main>
+    </main></>
   );
 }

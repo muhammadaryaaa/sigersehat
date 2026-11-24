@@ -4,6 +4,7 @@ import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate, useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
 import { TextField } from "../components/ui/TextField";
+import { PageHeader } from "../components/ui/PageHeader";
 
 type ArticleListItem = { id: string; slug: string; title: string; category: string; summary: string; source_name: string; published_at: string };
 type Category = { slug: string; published_count: number };
@@ -24,9 +25,9 @@ export function EduPage() {
     apiFetch<ArticleListItem[]>(`/api/v1/edu/articles?${params}`).then(setArticles).catch(() => setError("Artikel tidak dapat dimuat.")).finally(() => setLoading(false));
   }, [category, q]);
   return (
+    <> <PageHeader title="Edukasi Kesehatan" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Edukasi Kesehatan</h1>
-      <p className="mt-2 text-ink-600">Artikel dari sumber resmi (Kemenkes RI dan Dinas Kesehatan) yang telah ditelaah. Setiap artikel mencantumkan referensinya.</p>
+      <p className="mt-2 text-ink-600">Artikel bersumber resmi (Kemenkes RI, Dinas Kesehatan, WHO). Setiap artikel mencantumkan sumber dan tanggal terbitnya; penelaah konten bernama sedang ditetapkan pengelola.</p>
       <form className="mt-6 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()} role="search">
         <TextField label="Cari artikel" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="mis. hipertensi, gizi, posbindu" />
         <div className="flex flex-col gap-1.5"><label className="text-sm font-medium" htmlFor="cat">Kategori</label>
@@ -46,7 +47,7 @@ export function EduPage() {
       </ul>
       {loading ? <p className="mt-6 text-ink-600" aria-live="polite">Memuat artikel…</p> : null}
       {!loading && !articles.length && !error ? <p className="mt-6 text-ink-600">Tidak ada artikel yang cocok. Coba kata kunci atau kategori lain.</p> : null}
-    </main>
+    </main></>
   );
 }
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate, useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
+import { PageHeader } from "../components/ui/PageHeader";
 import { TextField } from "../components/ui/TextField";
 import { TrendChart } from "../components/ui/TrendChart";
 
@@ -41,8 +42,8 @@ export function MonitorPage() {
   }
   const [label, unit] = METRIC_LABEL[metric];
   return (
+    <> <PageHeader title="Catat &amp; Pantau" description="Catat pengukuranmu dan lihat trennya dari waktu ke waktu." />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Catat &amp; Pantau</h1>
       <section aria-labelledby="tren" className="mt-6 rounded-card border border-line bg-white p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="tren" className="text-xl font-bold">Perkembangan {label}</h2>
@@ -62,7 +63,7 @@ export function MonitorPage() {
           <TextField label="Gula darah" unit="mg/dL" type="number" value={form.bloodSugarMgdl} onChange={set("bloodSugarMgdl")} />
           <div className="flex items-end"><Button type="submit" disabled={busy}>{busy ? "Menyimpan…" : "Simpan Pengukuran"}</Button></div>
         </form>
-        {notice ? <p role="status" className="mt-3 rounded-card bg-brand-50 p-3 text-brand-800">{notice}</p> : null}
+        {notice ? <p role="status" className="route-enter fixed bottom-5 right-5 z-50 max-w-xs rounded-card bg-brand-800 px-4 py-3 font-medium text-white shadow-lift">{notice}</p> : null}
         {error ? <p role="alert" className="mt-3 rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
       </section>
       <section aria-labelledby="terbaru" className="mt-8">
@@ -72,6 +73,6 @@ export function MonitorPage() {
           <Button variant="secondary" onClick={() => correct(m)}>Koreksi</Button></li>)}</ul>
           : <p className="mt-3 text-ink-600">Belum ada pengukuran tercatat. <a href="/skrining" className="font-semibold text-brand-800 underline">Mulai dari skrining pertama</a> atau catat pengukuran manual pada formulir di bawah.</p>}
       </section>
-    </main>
+    </main></>
   );
 }

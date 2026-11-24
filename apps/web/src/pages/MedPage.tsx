@@ -3,6 +3,7 @@ import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
 import { TextField } from "../components/ui/TextField";
+import { PageHeader } from "../components/ui/PageHeader";
 
 type Overview = { verification_status: string; profession: string | null; consented_patients: number; follow_up_due_today: number };
 type Patient = { id: string; full_name: string; birth_date: string; sex: string };
@@ -38,17 +39,19 @@ export function MedPage() {
     catch (err) { setError(err instanceof ApiClientError ? err.message : "Tindak lanjut tidak dapat dibuat."); }
   }
   if (overview && overview.verification_status !== "verified") return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Ruang Tenaga Kesehatan</h1>
-      <div className="mt-4 rounded-card bg-warn-50 p-4 text-warn-800">
-        Status kredensial Anda: <strong>{overview.verification_status}</strong>. Akses data pasien terbuka setelah administrator memverifikasi STR/SIP Anda. Selama menunggu, Anda tetap dapat memakai fitur masyarakat.
-      </div>
-    </main>
+    <>
+      <PageHeader title="Ruang Tenaga Kesehatan" description="Akses data pasien hanya terbuka untuk tenaga kesehatan terverifikasi dan hanya atas persetujuan aktif pasien." />
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <div className="rounded-card bg-warn-50 p-4 text-warn-800">
+          Status kredensial Anda: <strong>{overview.verification_status}</strong>. Akses data pasien terbuka setelah administrator memverifikasi STR/SIP Anda. Selama menunggu, Anda tetap dapat memakai fitur masyarakat.
+        </div>
+      </main>
+    </>
   );
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Ruang Tenaga Kesehatan</h1>
-      <p className="mt-2 text-ink-600">Pasien yang tampil hanya yang memberikan persetujuan aktif kepada Anda. Setiap pembukaan riwayat tercatat di audit log.</p>
+    <>
+      <PageHeader title="Ruang Tenaga Kesehatan" description="Pasien yang tampil hanya yang memberikan persetujuan aktif kepada Anda. Setiap pembukaan riwayat tercatat di audit log." />
+      <main className="mx-auto max-w-3xl px-4 py-8">
       {overview ? <p className="mt-2 text-sm text-ink-600">Pasien ber-consent: {overview.consented_patients} • Tindak lanjut jatuh tempo: {overview.follow_up_due_today}</p> : null}
       {notice ? <p role="status" className="mt-4 rounded-card bg-brand-50 p-3 text-brand-800">{notice}</p> : null}
       {error ? <p role="alert" className="mt-4 rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
@@ -78,6 +81,7 @@ export function MedPage() {
           <div className="sm:col-span-3"><Button type="submit">Buat Tindak Lanjut</Button></div>
         </form>
       </section> : null}
-    </main>
+      </main>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../lib/api";
+import { PageHeader } from "../components/ui/PageHeader";
 
 type Stats = { period_days: number; users_by_role: { role: string; count: number | string }[]; screenings_completed: number;
   risk_distribution: { category: string; count: number | string }[]; measurements_recorded: number;
@@ -19,9 +20,9 @@ export function InsightPage() {
   const [error, setError] = useState("");
   useEffect(() => { apiFetch<Stats>(`/api/v1/insights/statistics?days=${days}`).then(setStats).catch(() => setError("Statistik tidak dapat dimuat.")); }, [days]);
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-3xl font-bold">SIGERINSIGHT — Statistik Agregat</h1>
-      <p className="mt-2 text-ink-600">Seluruh angka adalah agregat anonim dari data aktual sistem. Tidak ada data individu dan tidak ada penelusuran per orang.</p>
+    <>
+      <PageHeader title="SIGERINSIGHT — Statistik Agregat" description="Seluruh angka adalah agregat anonim dari data aktual sistem. Tidak ada data individu dan tidak ada penelusuran per orang." />
+      <main className="mx-auto max-w-4xl px-4 py-8">
       <div className="mt-4 flex flex-col gap-1.5 max-w-xs"><label className="text-sm font-medium" htmlFor="period">Periode</label>
         <select id="period" className="min-h-12 rounded-btn border border-line bg-white px-3" value={days} onChange={(e) => setDays(Number(e.target.value))}>
           <option value={7}>7 hari</option><option value={30}>30 hari</option><option value={90}>90 hari</option><option value={365}>1 tahun</option>
@@ -41,5 +42,6 @@ export function InsightPage() {
         <p className="text-sm text-ink-500">{stats.privacy_note}</p>
       </div> : null}
     </main>
+    </>
   );
 }

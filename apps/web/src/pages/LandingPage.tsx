@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Activity, ArrowRight, BookOpen, ClipboardCheck, MapPin, MessagesSquare, PhoneCall } from "lucide-react";
 import { apiFetch } from "../lib/api";
+import { useReveal, useCountUp } from "../lib/motion";
 
 // Halaman depan SIGERSEHAT (revisi visual 24 Nov 2026).
 // Semua foto adalah foto nyata berlisensi bebas dari Wikimedia Commons,
@@ -9,8 +10,11 @@ import { apiFetch } from "../lib/api";
 // dan lengkap di /images/CREDITS.md. Semua angka menampilkan sumbernya.
 
 type Article = { id: string; slug: string; title: string; summary: string; source_name: string; category: string };
-type Facility = { id: string; name: string; facility_type: string; region_name: string };
 
+const ARTICLE_PHOTO_BY_SLUG: Record<string, { src: string; alt: string; credit: string }> = {
+  "cek-kesehatan-dan-skrining-ptm-di-posbindu": { src: "posyandu", alt: "Kegiatan pos pelayanan terpadu: warga dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0)" },
+  "mengenal-hipertensi-dan-cara-mengendalikannya": { src: "jalan-sehat", alt: "Warga berjalan sehat bersama saat hari bebas kendaraan — aktivitas fisik rutin membantu mengendalikan tekanan darah", credit: "Foto: baka_neko_baka (CC BY 2.0)" },
+};
 const ARTICLE_PHOTO: Record<string, { src: string; alt: string; credit: string }> = {
   ptm: { src: "cek-tekanan-darah", alt: "Petugas kesehatan memeriksa tekanan darah warga", credit: "Foto: rawpixel.com (CC0)" },
   gizi: { src: "pasar-sayur", alt: "Pedagang sayuran di pasar tradisional", credit: "Foto: Tyo Satriany (CC BY-SA 4.0)" },
@@ -27,21 +31,28 @@ function Img({ name, alt, w, h, eager = false, className = "" }: { name: string;
 
 const FAQ = [
   { q: "Apakah hasil skrining di sini adalah diagnosis?", a: "Bukan. Skrining menghasilkan perkiraan tingkat risiko awal dari jawaban dan ukuran yang Anda masukkan, sebagai bahan edukasi dan pertimbangan untuk memeriksakan diri. Diagnosis hanya dapat ditegakkan tenaga kesehatan lewat pemeriksaan langsung." },
-  { q: "Apakah saya harus mendaftar untuk memakai SIGERSEHAT?", a: "Edukasi dan peta fasilitas dapat dibaca tanpa akun. Skrining, pemantauan, dan pengingat memerlukan akun agar hasilnya tersimpan dan hanya dapat dilihat oleh Anda." },
+  { q: "Apakah saya harus mendaftar untuk memakai SIGERSEHAT?", a: "Tidak untuk hal-hal dasar. Edukasi, peta fasilitas, skrining awal, kalkulator IMT, dan Tanya AI untuk edukasi umum dapat dipakai tanpa akun, dan jawaban tamu tidak disimpan di server. Akun hanya diperlukan untuk menyimpan catatan pemantauan, riwayat, pengingat, dan profil keluarga." },
   { q: "Apakah data kesehatan saya aman?", a: "Data disimpan dengan kata sandi ter-hash, akses berbasis peran, dan administrator tidak dapat membaca data kesehatan individu. Data hanya dibagikan ke tenaga kesehatan bila Anda memberi persetujuan aktif, dan persetujuan dapat dicabut kapan saja. Rinciannya ada di Kebijakan Privasi." },
-  { q: "Apakah peta menampilkan semua fasilitas kesehatan di Lampung?", a: "Tidak. Peta menampilkan sebagian fasilitas terpilih yang diverifikasi satu per satu dari OpenStreetMap, lengkap dengan tanggal verifikasinya. Untuk fasilitas lain, gunakan pencarian OpenStreetMap atau tanyakan ke dinas kesehatan setempat." },
+  { q: "Apakah peta menampilkan semua fasilitas kesehatan di Lampung?", a: "Belum tentu. Peta memuat fasilitas dari data terbuka OpenStreetMap untuk seluruh 15 kabupaten/kota dan jumlahnya ditampilkan apa adanya di halaman peta beserta tanggal pembaruan datanya. Data lapangan bisa berubah dan belum semua fasilitas terpetakan; bila menemukan yang keliru atau belum ada, gunakan tombol laporkan di halaman peta." },
   { q: "Apa yang harus saya lakukan bila mengalami gejala berat?", a: "Hubungi 119 atau datangi IGD terdekat segera. Jangan menunggu jawaban dari skrining atau asisten AI di platform ini." },
   { q: "Apakah layanan ini berbayar?", a: "Tidak. SIGERSEHAT dapat digunakan tanpa biaya. Pemeriksaan lanjutan di fasilitas kesehatan mengikuti ketentuan fasilitas dan program pemerintah yang berlaku, misalnya Cek Kesehatan Gratis Kemenkes di puskesmas." },
 ];
 
+type FacStats = { total: number; by_region: { region_name: string; n: number }[]; data_updated: string | null };
+function CountNum({ value, decimals = 0 }: { value: number; decimals?: number }) {
+  const ref = useCountUp<HTMLSpanElement>(value, decimals);
+  return <span ref={ref}>{value.toLocaleString("id-ID", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}</span>;
+}
+
 export function LandingPage() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [stats, setStats] = useState<FacStats | null>(null);
+  const revealRef = useReveal<HTMLElement>();
   useEffect(() => { apiFetch<Article[]>("/api/v1/edu/articles").then((a) => setArticles(a.slice(0, 3))).catch(() => {}); }, []);
-  useEffect(() => { apiFetch<Facility[]>("/api/v1/facilities").then((f) => setFacilities(f.slice(0, 5))).catch(() => {}); }, []);
+  useEffect(() => { apiFetch<FacStats>("/api/v1/facilities/stats").then(setStats).catch(() => {}); }, []);
 
   return (
-    <main>
+    <main ref={revealRef}>
       {/* HERO */}
       <section className="mx-auto max-w-6xl px-4 pt-8 md:pt-12">
         <div className="grid items-center gap-8 md:grid-cols-2">
@@ -66,13 +77,13 @@ export function LandingPage() {
       <section aria-label="Sumber data" className="mx-auto max-w-6xl px-4 pt-8">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-card border border-line bg-white px-5 py-4 text-sm shadow-card">
           <p><span className="font-bold text-ink-900">Rujukan data:</span> Kemenkes RI · Dinas Kesehatan Provinsi Lampung · BPS Provinsi Lampung · WHO</p>
-          <p className="text-ink-500">Konten ditelaah sebelum diterbitkan · Diperbarui 24 November 2026</p>
+          <p className="text-ink-500">Diperbarui 25 November 2026</p>
           <Link to="/tentang" className="ml-auto font-semibold text-brand-800 underline">Tentang platform ini</Link>
         </div>
       </section>
 
       {/* FITUR UTAMA — bobot visual berbeda sesuai prioritas */}
-      <section className="mx-auto max-w-6xl px-4 pt-12" aria-labelledby="fitur">
+      <section data-reveal className="mx-auto max-w-6xl px-4 pt-12" aria-labelledby="fitur">
         <h2 id="fitur" className="text-3xl font-bold">Lima hal yang dapat dilakukan di sini</h2>
         <div className="mt-6 grid gap-5 md:grid-cols-3">
           <article className="overflow-hidden rounded-card border border-line bg-white shadow-card md:col-span-2">
@@ -87,26 +98,37 @@ export function LandingPage() {
           <article className="flex flex-col rounded-card border border-line bg-brand-800 p-6 text-white shadow-card">
             <h3 className="flex items-center gap-2 text-2xl font-bold"><MessagesSquare aria-hidden="true" /> Tanya AI (SIGERAI)</h3>
             <p className="mt-2 text-brand-50">Asisten edukasi yang menjawab hanya dari sumber Kemenkes RI dan WHO, menampilkan rujukannya, dan menolak memberi diagnosis atau resep. Setiap jawaban berlabel dibantu AI.</p>
-            <Link to="/tanya" className="mt-auto inline-flex min-h-11 items-center gap-2 pt-4 font-bold text-white underline">Ajukan pertanyaan <ArrowRight size={16} aria-hidden="true" /></Link>
+            <p className="mt-4 text-sm font-bold uppercase tracking-wide text-brand-50/80">Contoh pertanyaan</p>
+            <div className="mt-2 flex flex-col gap-2">
+              {["Apa itu hipertensi dan berapa batas tekanan darah normal?", "Bagaimana cara mencegah diabetes?", "Apa saja imunisasi wajib untuk bayi?"].map((q) => (
+                <Link key={q} to={`/tanya?q=${encodeURIComponent(q)}`} className="rounded-btn bg-white/10 px-3 py-2.5 text-[15px] text-white transition-colors hover:bg-white/20">{q}</Link>
+              ))}
+            </div>
+            <Link to="/tanya" className="mt-auto inline-flex min-h-11 items-center gap-2 pt-4 font-bold text-white underline">Ajukan pertanyaan lain <ArrowRight size={16} aria-hidden="true" /></Link>
           </article>
           <article className="rounded-card border border-line bg-white p-6 shadow-card">
             <h3 className="flex items-center gap-2 text-xl font-bold"><Activity className="text-brand-800" aria-hidden="true" /> Catat &amp; Pantau</h3>
-            <p className="mt-2 text-ink-600">Catat tekanan darah, berat badan, dan gula darahmu; lihat grafik tren dari catatanmu sendiri. Tidak ada data contoh yang menyamar sebagai data nyata.</p>
+            <p className="mt-2 text-ink-600">Catat tekanan darah, berat badan, dan gula darahmu; lihat grafik tren dari catatanmu sendiri. Perlu akun agar tersimpan.</p>
+            <div className="mt-4 rounded-card border border-dashed border-line bg-cream p-3" aria-hidden="true">
+              <p className="text-xs font-bold uppercase tracking-wide text-ink-500">Contoh tampilan</p>
+              <svg viewBox="0 0 200 56" className="mt-2 w-full"><polyline points="4,38 44,32 84,36 124,24 164,20 196,14" fill="none" stroke="#0e5a4f" strokeWidth="2.5" strokeLinecap="round" /><circle cx="196" cy="14" r="3.5" fill="#822333" /></svg>
+              <p className="mt-1 flex justify-between text-xs text-ink-500"><span>Tekanan darah sistolik</span><span>tren menurun</span></p>
+            </div>
             <Link to="/pantau" className="mt-3 inline-flex min-h-11 items-center font-bold text-brand-800 underline">Buka pemantauan</Link>
           </article>
           <article className="overflow-hidden rounded-card border border-line bg-white shadow-card">
-            <Img name="jalan-sehat" alt="Warga berjalan dan berolahraga pada hari bebas kendaraan" w={1600} h={1200} className="aspect-[16/9] w-full object-cover" />
+            <Img name="senam-lansia" alt="Kelompok lansia melakukan senam pagi bersama di taman" w={1600} h={1067} className="aspect-[16/9] w-full object-cover" />
             <div className="p-6">
               <h3 className="flex items-center gap-2 text-xl font-bold"><BookOpen className="text-brand-800" aria-hidden="true" /> Edukasi Kesehatan</h3>
               <p className="mt-2 text-ink-600">Artikel dan kuis seputar PTM, gizi, ibu dan anak, imunisasi, dan gaya hidup — masing-masing dengan sumber dan tanggal tinjau.</p>
               <Link to="/edukasi" className="mt-3 inline-flex min-h-11 items-center font-bold text-brand-800 underline">Baca edukasi</Link>
-              <p className="mt-2 text-xs text-ink-500">Foto: baka_neko_baka (CC BY 2.0), Wikimedia Commons.</p>
+              <p className="mt-2 text-xs text-ink-500">Foto: Supersusage (CC BY-SA 4.0), Wikimedia Commons.</p>
             </div>
           </article>
           <article className="rounded-card border border-line bg-white p-6 shadow-card">
-            <h3 className="flex items-center gap-2 text-xl font-bold"><MapPin className="text-brand-800" aria-hidden="true" /> Peta Faskes Terpilih</h3>
-            <p className="mt-2 text-ink-600">Sebagian fasilitas kesehatan terverifikasi satu per satu dari OpenStreetMap — bukan direktori lengkap Lampung.</p>
-            {facilities.length ? <ul className="mt-3 flex flex-col gap-1.5 text-[15px]">{facilities.map((f) => <li key={f.id} className="flex gap-2"><MapPin size={15} className="mt-1 shrink-0 text-accent-700" aria-hidden="true" /><span>{f.name} <span className="text-ink-500">— {f.region_name}</span></span></li>)}</ul> : null}
+            <h3 className="flex items-center gap-2 text-xl font-bold"><MapPin className="text-brand-800" aria-hidden="true" /> Peta Faskes Lampung</h3>
+            <p className="mt-2 text-ink-600">Fasilitas kesehatan dari data terbuka OpenStreetMap untuk seluruh kabupaten/kota di Lampung. Data terus dilengkapi dan mungkin belum mencakup semuanya.</p>
+            {stats ? <p className="mt-3 text-[15px]"><strong className="font-display text-2xl text-brand-800">{stats.total.toLocaleString("id-ID")}</strong> fasilitas termuat · terbanyak di {stats.by_region.slice(0, 3).map((r) => `${r.region_name} (${r.n})`).join(", ")}</p> : null}
             <Link to="/peta" className="mt-3 inline-flex min-h-11 items-center font-bold text-brand-800 underline">Buka peta fasilitas</Link>
           </article>
         </div>
@@ -115,11 +137,11 @@ export function LandingPage() {
       <div className="tapis-band mx-auto mt-14 max-w-6xl px-4" aria-hidden="true" />
 
       {/* CARA KERJA */}
-      <section className="mx-auto max-w-6xl px-4 pt-12" aria-labelledby="cara">
+      <section data-reveal className="mx-auto max-w-6xl px-4 pt-12" aria-labelledby="cara">
         <div className="grid items-start gap-8 md:grid-cols-5">
           <figure className="md:col-span-2">
-            <Img name="posyandu" alt="Kegiatan posyandu: ibu menggendong bayi di timbangan, kader bertugas di meja layanan" w={1600} h={1064} className="aspect-[4/3] w-full rounded-card object-cover shadow-card" />
-            <figcaption className="mt-2 text-xs text-ink-500">Kegiatan posyandu di Indonesia. Foto: Kanoman123 (CC BY-SA 4.0), Wikimedia Commons.</figcaption>
+            <Img name="ibu-anak-timbang" alt="Kader menimbang bayi dengan timbangan gantung di pos pelayanan terpadu" w={1600} h={1067} className="aspect-[4/3] w-full rounded-card object-cover shadow-card" />
+            <figcaption className="mt-2 text-xs text-ink-500">Penimbangan balita di pos pelayanan terpadu. Foto: USAID Indonesia (domain publik), Wikimedia Commons.</figcaption>
           </figure>
           <div className="md:col-span-3">
             <h2 id="cara" className="text-3xl font-bold">Cara kerjanya</h2>
@@ -147,19 +169,19 @@ export function LandingPage() {
           <h2 id="data" className="text-3xl font-bold">Angka kesehatan Lampung, dengan sumbernya</h2>
           <div className="mt-6 grid gap-5 md:grid-cols-3">
             <div className="rounded-card border border-line bg-white p-6 shadow-card">
-              <p className="font-display text-5xl font-bold text-brand-800">29,7% <span className="text-2xl text-ink-500">vs</span> 7,9%</p>
-              <p className="mt-2 text-ink-600">Prevalensi hipertensi warga ≥18 tahun di Lampung: terukur 29,7%, tetapi yang terdiagnosis dokter hanya 7,9%. Sebagian besar belum menyadari kondisinya.</p>
-              <p className="mt-3 text-sm text-ink-500">Sumber: Survei Kesehatan Indonesia 2023, Kemenkes RI.</p>
+              <p className="font-display text-5xl font-bold text-brand-800"><CountNum value={15.9} decimals={1} />%</p>
+              <p className="mt-2 text-ink-600">Balita di Lampung mengalami stunting. Pemantauan tumbuh kembang dan imunisasi di posyandu adalah cara mendeteksinya sejak dini.</p>
+              <p className="mt-3 text-sm text-ink-500">Sumber: <a className="underline" href="https://www.kemkes.go.id" target="_blank" rel="noreferrer">Survei Status Gizi Indonesia 2024, Kemenkes RI</a>.</p>
             </div>
             <div className="rounded-card border border-line bg-white p-6 shadow-card">
-              <p className="font-display text-5xl font-bold text-brand-800">2.771</p>
+              <p className="font-display text-5xl font-bold text-brand-800"><CountNum value={2771} /></p>
               <p className="mt-2 text-ink-600">Posbindu PTM tersebar di Lampung, di samping 320 puskesmas dan 81 rumah sakit — titik deteksi dini yang sebenarnya dekat dengan warga.</p>
-              <p className="mt-3 text-sm text-ink-500">Sumber: Profil Kesehatan Provinsi Lampung 2023, Dinkes Lampung.</p>
+              <p className="mt-3 text-sm text-ink-500">Sumber: <a className="underline" href="https://dinkes.lampungprov.go.id" target="_blank" rel="noreferrer">Profil Kesehatan Provinsi Lampung 2023, Dinkes Lampung</a>.</p>
             </div>
             <div className="rounded-card border border-line bg-white p-6 shadow-card">
-              <p className="font-display text-5xl font-bold text-brand-800">85,99%</p>
+              <p className="font-display text-5xl font-bold text-brand-800"><CountNum value={85.99} decimals={2} />%</p>
               <p className="mt-2 text-ink-600">Warga Lampung memakai telepon seluler, sementara pemakai komputer hanya 7,88%. Karena itu platform ini dirancang untuk ponsel lebih dulu.</p>
-              <p className="mt-3 text-sm text-ink-500">Sumber: Susenas Maret 2024, BPS Provinsi Lampung.</p>
+              <p className="mt-3 text-sm text-ink-500">Sumber: <a className="underline" href="https://lampung.bps.go.id" target="_blank" rel="noreferrer">Susenas Maret 2024, BPS Provinsi Lampung</a>.</p>
             </div>
           </div>
           {articles.length ? (
@@ -167,7 +189,7 @@ export function LandingPage() {
               <h3 className="text-2xl font-bold">Edukasi terbaru</h3>
               <div className="mt-4 grid gap-5 md:grid-cols-3">
                 {articles.map((a) => {
-                  const ph = ARTICLE_PHOTO[a.category] ?? FALLBACK_PHOTO;
+                  const ph = ARTICLE_PHOTO_BY_SLUG[a.slug] ?? ARTICLE_PHOTO[a.category] ?? FALLBACK_PHOTO;
                   return (
                     <article key={a.id} className="overflow-hidden rounded-card border border-line bg-white shadow-card">
                       <Img name={ph.src} alt={ph.alt} w={960} h={640} className="aspect-[16/9] w-full object-cover" />
@@ -186,29 +208,33 @@ export function LandingPage() {
       </section>
 
       {/* NUANGSA LAMPUNG */}
-      <section className="mx-auto max-w-6xl px-4 pt-12" aria-labelledby="lampung">
+      <section data-reveal className="mx-auto max-w-6xl px-4 pt-12" aria-labelledby="lampung">
         <h2 id="lampung" className="text-3xl font-bold">Dibangun untuk Lampung</h2>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           <figure>
-            <Img name="kain-tapis" alt="Kain tapis Lampung berwarna hitam dan merah dengan sulaman benang emas" w={1600} h={1200} className="aspect-[16/10] w-full rounded-card object-cover shadow-card" />
+            <Img eager name="kain-tapis" alt="Kain tapis Lampung berwarna hitam dan merah dengan sulaman benang emas" w={1600} h={1200} className="aspect-[16/10] w-full rounded-card object-cover shadow-card" />
             <figcaption className="mt-2 text-xs text-ink-500">Kain tapis, tenun tradisional Lampung. Foto: Crisco 1492 (CC BY-SA 3.0), Wikimedia Commons.</figcaption>
           </figure>
           <figure>
-            <Img name="pantai-pahawang" alt="Pesisir Pulau Pahawang, Pesawaran, Lampung" w={1600} h={885} className="aspect-[16/10] w-full rounded-card object-cover shadow-card" />
+            <Img eager name="pantai-pahawang" alt="Pesisir Pulau Pahawang, Pesawaran, Lampung" w={1600} h={885} className="aspect-[16/10] w-full rounded-card object-cover shadow-card" />
             <figcaption className="mt-2 text-xs text-ink-500">Pulau Pahawang, Pesawaran. Foto: Fidelia Zheng (CC0), Wikimedia Commons.</figcaption>
           </figure>
         </div>
-        <p className="mt-5 max-w-3xl text-ink-600">Nama SIGERSEHAT mengambil mahkota siger — simbol Lampung — dan warna marun-emas kain tapis menjadi aksen visualnya. Isi platformnya berpijak pada data Lampung sendiri: angka SKI dan Profil Kesehatan provinsi, wilayah 15 kabupaten/kota, dan fasilitas yang diverifikasi di lapangan digital OpenStreetMap.</p>
+        <div className="mt-5 max-w-3xl flex flex-col gap-3 text-ink-600">
+          <p>SIGERSEHAT dikembangkan oleh <strong>Kelompok Ditolak UGM</strong> — Muhammad Arya Putra, Nabilatus Salamah, Mutia Afif Ramadhani, dan Nazwa Tsabitha Putri HI — sebagai platform edukasi dan pemantauan kesehatan preventif untuk warga Provinsi Lampung. Ini bukan layanan resmi pemerintah dan tidak terhubung dengan rekam medis, SATUSEHAT, atau sistem BPJS.</p>
+          <p>Pekerjaan kelompok ini konkret: menyusun skrining awal dari pedoman Kemenkes RI, menulis edukasi dari sumber Kemenkes dan WHO, memetakan fasilitas kesehatan dari data terbuka, dan merancang pengingat kontrol serta imunisasi. Nama dan aksen visualnya mengambil mahkota siger dan warna marun-emas kain tapis, dua simbol Lampung.</p>
+          <p>Datanya berasal dari dokumen resmi: Survei Kesehatan Indonesia 2023 dan Profil Kesehatan Provinsi Lampung 2023 (Kemenkes RI dan Dinas Kesehatan), Susenas Maret 2024 (BPS), serta OpenStreetMap untuk lokasi fasilitas — setiap angka di situs ini mencantumkan sumbernya.</p>
+        </div>
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-6xl px-4 pt-12 pb-4" aria-labelledby="faq">
+      <section data-reveal className="mx-auto max-w-6xl px-4 pt-12 pb-4" aria-labelledby="faq">
         <h2 id="faq" className="text-3xl font-bold">Pertanyaan yang sering diajukan</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {FAQ.map((f) => (
-            <details key={f.q} className="rounded-card border border-line bg-white p-5 shadow-card">
+            <details key={f.q} className="faq rounded-card border border-line bg-white p-5 shadow-card">
               <summary className="cursor-pointer font-bold">{f.q}</summary>
-              <p className="mt-2 text-ink-600">{f.a}</p>
+              <div className="faq-body"><div><p className="mt-2 text-ink-600">{f.a}</p></div></div>
             </details>
           ))}
         </div>

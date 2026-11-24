@@ -3,6 +3,7 @@ import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
 import { TextField } from "../components/ui/TextField";
+import { PageHeader } from "../components/ui/PageHeader";
 
 type AdminArticle = { id: string; title: string; category: string; status: string; reviewer_user_id: string | null; reviewed_at: string | null; updated_at: string };
 export function AdminEduPage() {
@@ -30,9 +31,9 @@ export function AdminEduPage() {
     } catch (err) { setError(err instanceof ApiClientError ? err.message : "Tindakan gagal."); }
   }
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Manajemen Konten Edukasi</h1>
-      <p className="mt-2 text-ink-600">Artikel hanya dapat diterbitkan setelah ditelaah dan penelaahnya tercatat. Referensi wajib dapat diperiksa.</p>
+    <>
+      <PageHeader title="Manajemen Konten Edukasi" description="Artikel hanya dapat diterbitkan setelah ditelaah dan penelaahnya tercatat. Referensi wajib dapat diperiksa." />
+      <main className="mx-auto max-w-3xl px-4 py-8">
       {notice ? <p role="status" className="mt-4 rounded-card bg-brand-50 p-3 text-brand-800">{notice}</p> : null}
       {error ? <p role="alert" className="mt-4 rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
       <ul className="mt-6 flex flex-col gap-2">
@@ -60,5 +61,6 @@ export function AdminEduPage() {
         </form>
       </section>
     </main>
+    </>
   );
 }

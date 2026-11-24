@@ -4,6 +4,7 @@ import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate, useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
 import { TextField } from "../components/ui/TextField";
+import { PageHeader } from "../components/ui/PageHeader";
 
 type UserRow = { id: string; email: string; full_name: string; role: string; status: string; verification_status: string | null };
 type Pending = { user_id: string; full_name: string; email: string; profession: string; credential_type: string; credential_number: string; workplace_name: string | null };
@@ -42,9 +43,10 @@ export function AdminManagePage() {
   };
   const TABS = [["users", "Pengguna"], ["nakes", "Verifikasi Nakes"], ["facilities", "Fasilitas"], ["content", "Konten & AI"], ["reports", "Laporan"], ["audit", "Audit Log"]] as const;
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Kelola Sistem</h1>
-      <p className="mt-2 text-ink-600">Konten edukasi dikelola di <Link className="font-semibold text-brand-700 underline" to="/admin/konten">Manajemen Konten</Link>. Halaman ini tidak menampilkan data kesehatan individu.</p>
+    <>
+      <PageHeader title="Kelola Sistem" description="Halaman ini tidak menampilkan data kesehatan individu." />
+      <main className="mx-auto max-w-4xl px-4 py-8">
+      <p className="text-ink-600">Konten edukasi dikelola di <Link className="font-semibold text-brand-700 underline" to="/admin/konten">Manajemen Konten</Link>.</p>
       <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Bagian pengelolaan">
         {TABS.map(([k, label]) => <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={`rounded-full border px-4 py-2 text-sm font-medium ${tab === k ? "border-brand-600 bg-brand-50 text-brand-800" : "border-line bg-white"}`}>{label}</button>)}
       </div>
@@ -107,5 +109,6 @@ export function AdminManagePage() {
       {tab === "audit" ? <ol className="mt-5 flex flex-col gap-1 text-sm">{audit.map((a) => <li key={a.id} className="rounded-card border border-line bg-white p-2">
         {a.created_at} — {a.actor_name ?? "(sistem)"} ({a.actor_role}) — {a.action} pada {a.object_type}</li>)}</ol> : null}
     </main>
+    </>
   );
 }

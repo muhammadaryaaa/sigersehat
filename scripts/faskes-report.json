@@ -1,0 +1,35 @@
+{
+  "tanggal_ambil": "2026-11-25",
+  "sumber": "OpenStreetMap via ekstrak Geofabrik Sumatra (ODbL)",
+  "total": 358,
+  "per_wilayah": {
+    "Tulang Bawang Barat": 9,
+    "Metro": 12,
+    "Lampung Utara": 15,
+    "Lampung Tengah": 47,
+    "Bandar Lampung": 158,
+    "Way Kanan": 4,
+    "Tanggamus": 8,
+    "Lampung Selatan": 25,
+    "Lampung Barat": 14,
+    "Pesawaran": 8,
+    "Pringsewu": 22,
+    "Lampung Timur": 15,
+    "Tulang Bawang": 9,
+    "Pesisir Barat": 12
+  },
+  "per_jenis": {
+    "rumah_sakit": 38,
+    "klinik": 100,
+    "puskesmas": 37,
+    "apotek": 162,
+    "posyandu": 14,
+    "pustu": 7
+  },
+  "dilewati": {
+    "near_curated": 20,
+    "fuzzy_dup": 6
+  },
+  "wilayah_tanpa_poligon": [],
+  "catatan_kualitas": "4 elemen nama jalan/gang (bukan fasilitas) dibuang manual dari hasil impor; 1 apotek yang salah jenis dikoreksi."
+}

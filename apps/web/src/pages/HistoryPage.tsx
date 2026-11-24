@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -11,8 +12,8 @@ export function HistoryPage() {
   const [error, setError] = useState("");
   useEffect(() => { if (profileId) apiFetch<Item[]>(`/api/v1/profiles/history?profileId=${profileId}`).then(setItems).catch(() => setError("Riwayat tidak dapat dimuat.")); }, [profileId]);
   return (
+    <> <PageHeader title="Riwayat Kesehatan" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Riwayat Kesehatan</h1>
       <p className="mt-2 text-ink-600">Seluruh catatan Anda dalam urutan waktu — pengukuran, skrining, dan imunisasi.</p>
       {error ? <p role="alert" className="mt-4 rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
       {items.length ? <ol className="mt-6 flex flex-col gap-2">
@@ -23,6 +24,6 @@ export function HistoryPage() {
           {i.kind === "immunization" ? <p className="mt-1 text-sm">Vaksin {String(i.detail.vaccine_code)} dosis {String(i.detail.dose_number)} di {String(i.detail.facility_name ?? "-")}</p> : null}
         </li>)}
       </ol> : <p className="mt-6 text-ink-600">Belum ada riwayat. Catatan pertama Anda akan muncul di sini setelah skrining atau pencatatan pengukuran.</p>}
-    </main>
+    </main></>
   );
 }

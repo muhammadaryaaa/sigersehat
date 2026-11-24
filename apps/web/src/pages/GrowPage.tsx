@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -38,8 +39,8 @@ export function GrowPage() {
     </div>
   );
   return (
+    <> <PageHeader title="Tumbuh Kembang Anak" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Tumbuh Kembang Anak</h1>
       <p className="mt-2 text-ink-600">Penilaian memakai standar pertumbuhan di basis data (WHO 2006, rujukan Permenkes 2/2020) dan jadwal imunisasi Kepmenkes 1098/2024.</p>
       <div className="mt-4 flex flex-col gap-1.5"><label className="text-sm font-medium" htmlFor="kid">Anak</label>
         <select id="kid" className="min-h-12 rounded-btn border border-line bg-white px-3" value={profileId} onChange={(e) => setProfileId(e.target.value)}>
@@ -70,6 +71,6 @@ export function GrowPage() {
           <div className="sm:col-span-2"><Button type="submit">Catat Imunisasi</Button></div>
         </form>
       </section>
-    </main>
+    </main></>
   );
 }

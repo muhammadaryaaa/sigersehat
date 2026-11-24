@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { createSession, sessionCookies, clearCookies, registerUser, loginUser, type Env } from "./service";
+import { verifyPassword } from "../../lib/crypto";
 import { requireAuth } from "../../middleware/auth";
 import { ApiError, notFound } from "../../domain/errors";
 import { isEmail, isDate, passwordProblem, requireString, validationError, type FieldError } from "../../lib/validate";
@@ -26,6 +27,7 @@ authRoutes.post("/register", async (c) => {
   if (birthDate && !isDate(birthDate)) errors.push({ field: "birthDate", message: "Tanggal lahir tidak valid.", code: "format" });
   const sex = body.sex === "female" ? "female" : body.sex === "male" ? "male" : "";
   if (!sex) errors.push({ field: "sex", message: "Jenis kelamin wajib dipilih.", code: "required" });
+  if (body.healthConsent !== true) errors.push({ field: "healthConsent", message: "Persetujuan penyimpanan data kesehatan wajib diberikan untuk membuat akun.", code: "required" });
   const accountType = body.accountType === "nakes" ? "nakes" : "masyarakat";
   let profession = "", credentialType = "", credentialNumber = "";
   if (accountType === "nakes") {
@@ -106,6 +108,67 @@ authRoutes.delete("/sessions/:id", requireAuth, async (c) => {
 // Reset kata sandi: token sekali pakai berlaku 1 jam, tersimpan ter-hash.
 // Pengiriman token memakai kanal email — BELUM ada penyedia email terhubung; pada APP_ENV=local
 // token dikembalikan di respons agar alur dapat diuji penuh secara lokal (tidak pernah di production).
+authRoutes.get("/export", requireAuth, async (c) => {
+  const actor = c.get("actor"); const db = c.env.DB;
+  const profiles = (await db.prepare("SELECT * FROM health_profiles WHERE owner_user_id = ?").bind(actor.id).all()).results;
+  const pids = profiles.map((p) => String(p.id));
+  const grab = async (sql: string, ...binds: unknown[]) => (await db.prepare(sql).bind(...binds).all()).results;
+  const data: Record<string, unknown> = { exported_at: new Date().toISOString(), account: await db.prepare("SELECT id, email, role, status, created_at, health_data_consent_at FROM users WHERE id = ?").bind(actor.id).first(), profiles };
+  if (pids.length) {
+    const inList = pids.map(() => "?").join(",");
+    data.measurements = await grab(`SELECT * FROM measurements WHERE profile_id IN (${inList}) ORDER BY measured_at`, ...pids);
+    data.screenings = await grab(`SELECT * FROM screening_sessions WHERE profile_id IN (${inList}) ORDER BY started_at`, ...pids);
+    data.reminders = await grab(`SELECT * FROM reminders WHERE profile_id IN (${inList})`, ...pids);
+    data.cycles = await grab(`SELECT * FROM cycle_records WHERE profile_id IN (${inList})`, ...pids).catch(() => []);
+    data.pregnancies = await grab(`SELECT * FROM pregnancies WHERE profile_id IN (${inList})`, ...pids).catch(() => []);
+    data.immunizations = await grab(`SELECT * FROM immunization_records WHERE profile_id IN (${inList})`, ...pids).catch(() => []);
+  }
+  data.notifications = await grab("SELECT * FROM notifications WHERE user_id = ?", actor.id);
+  data.consents = await grab("SELECT * FROM consents WHERE granted_by_user_id = ?", actor.id).catch(() => []);
+  await logAudit(db, { actorUserId: actor.id, actorRole: actor.role, action: "auth.export_data", objectType: "user", objectId: actor.id });
+  return c.json({ data });
+});
+
+authRoutes.delete("/account", requireAuth, async (c) => {
+  const actor = c.get("actor"); const db = c.env.DB;
+  const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
+  const user = await db.prepare("SELECT password_hash FROM users WHERE id = ?").bind(actor.id).first<{ password_hash: string }>();
+  if (!user || typeof body.password !== "string" || !(await verifyPassword(body.password, user.password_hash))) {
+    throw new ApiError(403, "forbidden", "Kata sandi salah. Penghapusan akun dibatalkan.");
+  }
+  const profiles = (await db.prepare("SELECT id FROM health_profiles WHERE owner_user_id = ?").bind(actor.id).all()).results.map((p) => String(p.id));
+  const stmts: D1PreparedStatement[] = [];
+  for (const pid of profiles) {
+    stmts.push(db.prepare("DELETE FROM anc_visits WHERE pregnancy_id IN (SELECT id FROM pregnancies WHERE profile_id = ?)").bind(pid));
+    stmts.push(db.prepare("DELETE FROM screening_answers WHERE session_id IN (SELECT id FROM screening_sessions WHERE profile_id = ?)").bind(pid));
+    stmts.push(db.prepare("DELETE FROM measurement_revisions WHERE measurement_id IN (SELECT id FROM measurements WHERE profile_id = ?)").bind(pid));
+    stmts.push(db.prepare("DELETE FROM iot_readings_raw WHERE measurement_id IN (SELECT id FROM measurements WHERE profile_id = ?)").bind(pid));
+    stmts.push(db.prepare("DELETE FROM consents WHERE profile_id = ?").bind(pid));
+    for (const t of ["measurements", "screening_sessions", "reminders", "cycle_records", "pregnancies", "immunization_records", "medication_schedules", "health_targets", "nutrition_logs", "nutrition_targets"]) {
+      stmts.push(db.prepare(`DELETE FROM ${t} WHERE profile_id = ?`).bind(pid));
+    }
+    stmts.push(db.prepare("DELETE FROM profile_preferences WHERE profile_id = ?").bind(pid));
+  }
+  stmts.push(db.prepare("DELETE FROM ai_messages WHERE conversation_id IN (SELECT id FROM ai_conversations WHERE user_id = ?)").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM ai_answer_reports WHERE reported_by_user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM ai_conversations WHERE user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM iot_readings_raw WHERE device_id IN (SELECT id FROM iot_devices WHERE owner_user_id = ?)").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM iot_devices WHERE owner_user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM notifications WHERE user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM facility_correction_reports WHERE reported_by_user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM health_profiles WHERE owner_user_id = ?").bind(actor.id));
+  stmts.push(db.prepare("DELETE FROM health_worker_profiles WHERE user_id = ?").bind(actor.id));
+  // Baris users tidak dapat dihapus fisik karena log audit menunjuknya (FK) — akun disamarkan:
+  // email diganti, hash kata sandi diacak, status dinonaktifkan. Data kesehatan sudah terhapus di atas.
+  stmts.push(db.prepare("UPDATE users SET email = ?, password_hash = ?, status = 'suspended' WHERE id = ?")
+    .bind(`terhapus-${actor.id}@invalid`, `deleted:${crypto.randomUUID()}`, actor.id));
+  await db.batch(stmts);
+  await logAudit(db, { actorUserId: actor.id, actorRole: actor.role, action: "auth.delete_account", objectType: "user", objectId: actor.id });
+  for (const cookie of clearCookies(c.env)) c.header("Set-Cookie", cookie, { append: true });
+  return c.json({ data: { deleted: true } });
+});
+
 authRoutes.post("/forgot-password", async (c) => {
   const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";

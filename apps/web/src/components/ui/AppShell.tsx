@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Activity, Baby, Bell, BookOpen, ClipboardCheck, Cpu, Heart, History, Home, LogOut, MapPin, MessagesSquare, PhoneCall, Salad, ShieldCheck, UserRound, Users } from "lucide-react";
 import { useAuth } from "../../lib/auth";
@@ -48,13 +48,25 @@ const NAV_PUBLIC = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { me, logout } = useAuth();
+  const [compact, setCompact] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setCompact(window.scrollY > 24);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // Preferensi tampilan lokal (tanpa akun): teks standar / besar untuk lansia.
+  function setDisplay(mode: string) {
+    if (mode === "elderly") { document.documentElement.dataset.display = "elderly"; localStorage.setItem("siger_display", "elderly"); }
+    else { delete document.documentElement.dataset.display; localStorage.setItem("siger_display", "standard"); }
+  }
   const role = me?.user?.role;
   const home = me ? (role === "nakes" ? "/nakes/beranda" : role === "admin" || role === "super_admin" ? "/admin/beranda" : "/beranda") : "/";
   const serviceItems = !me ? null : role === "nakes" ? NAV_NAKES : role === "admin" || role === "super_admin" ? NAV_ADMIN : NAV_MASYARAKAT;
   return (
     <div className="min-h-screen bg-canvas">
       <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5">
+        <div className={`mx-auto flex max-w-6xl items-center gap-3 px-4 transition-all duration-200 ${compact ? "py-1.5" : "py-2.5"}`}>
           <Link to={home} aria-label="SIGERSEHAT — beranda"><SigerMark /></Link>
           {me ? null : (
             <nav aria-label="Navigasi utama" className="ml-4 hidden items-center gap-1 lg:flex">
@@ -65,10 +77,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
           <div className="ml-auto flex items-center gap-2">
             <a href="tel:119" className="hidden min-h-10 items-center gap-1.5 rounded-btn px-2 text-sm font-bold text-accent-800 sm:inline-flex"><PhoneCall size={16} aria-hidden="true" /> Darurat 119</a>
-            {me ? <>
-              <Link to="/akun" className="inline-flex min-h-10 items-center rounded-btn border border-line bg-white px-3 text-sm font-semibold">Akun</Link>
-              <button type="button" onClick={async () => { await logout(); location.href = "/"; }} className="inline-flex min-h-10 items-center gap-1.5 rounded-btn border border-line bg-white px-3 text-sm font-semibold"><LogOut size={16} aria-hidden="true" /> Keluar</button>
-            </> : <>
+            {me ? <div className="relative">
+              <button type="button" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)} className="inline-flex min-h-10 items-center gap-1.5 rounded-btn border border-line bg-white px-3 text-sm font-semibold"><UserRound size={16} aria-hidden="true" /> Akun saya</button>
+              {menuOpen ? (
+                <div role="menu" className="route-enter absolute right-0 top-full z-50 mt-1.5 w-52 rounded-card border border-line bg-white p-1.5 shadow-lift">
+                  <Link role="menuitem" to="/beranda" onClick={() => setMenuOpen(false)} className="block rounded-btn px-3 py-2.5 text-sm font-medium hover:bg-brand-50">Pantauan saya</Link>
+                  <Link role="menuitem" to="/akun" onClick={() => setMenuOpen(false)} className="block rounded-btn px-3 py-2.5 text-sm font-medium hover:bg-brand-50">Pengaturan akun</Link>
+                  <button role="menuitem" type="button" onClick={async () => { await logout(); location.href = "/"; }} className="flex w-full items-center gap-1.5 rounded-btn px-3 py-2.5 text-left text-sm font-medium text-danger-700 hover:bg-danger-50"><LogOut size={15} aria-hidden="true" /> Keluar</button>
+                </div>
+              ) : null}
+            </div> : <>
               <Link to="/masuk" className="inline-flex min-h-10 items-center rounded-btn px-3 text-sm font-semibold text-ink-900">Masuk</Link>
               <Link to="/skrining" className="inline-flex min-h-10 items-center rounded-btn bg-brand-800 px-4 text-sm font-semibold text-white shadow-card">Periksa Risiko</Link>
             </>}
@@ -120,9 +138,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           <div>
             <p className="font-bold text-ink-900">Sumber data</p>
-            <p className="mt-2">Rujukan data: Kemenkes RI (Survei Kesehatan Indonesia 2023), Dinas Kesehatan Provinsi Lampung (Profil Kesehatan 2023), BPS Provinsi Lampung (2024), WHO. Fasilitas kesehatan bersumber dari OpenStreetMap dan diverifikasi per titik.</p>
+            <p className="mt-2">Rujukan data: Kemenkes RI (Survei Kesehatan Indonesia 2023), Dinas Kesehatan Provinsi Lampung (Profil Kesehatan 2023), BPS Provinsi Lampung (2024), WHO. Fasilitas kesehatan bersumber dari data terbuka OpenStreetMap untuk seluruh kabupaten/kota di Lampung, ditambah titik kurasi terverifikasi.</p>
             <p className="mt-2">Hasil skrining dan jawaban AI di platform ini bersifat <strong>edukatif</strong>, <strong>bukan diagnosis</strong>, dan tidak menggantikan pemeriksaan tenaga kesehatan.</p>
-            <p className="mt-2 text-ink-500">Terakhir diperbarui: 24 November 2026.</p>
+            <p className="mt-2 text-ink-500">Dikembangkan oleh Kelompok Ditolak UGM. Terakhir diperbarui: 25 November 2026.</p>
+            <div className="mt-3 flex items-center gap-2">
+              <span className="font-semibold text-ink-900">Ukuran teks:</span>
+              <button type="button" onClick={() => setDisplay("standard")} className="min-h-10 rounded-btn border border-line px-3 font-semibold hover:bg-brand-50">Standar</button>
+              <button type="button" onClick={() => setDisplay("elderly")} className="min-h-10 rounded-btn border border-line px-3 font-semibold hover:bg-brand-50">Besar (lansia)</button>
+            </div>
           </div>
         </div>
       </footer>

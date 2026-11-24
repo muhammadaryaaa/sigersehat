@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -31,8 +32,8 @@ export function ElderPage() {
     catch { setError("Jadwal obat tidak dapat dihentikan."); }
   }
   return (
+    <> <PageHeader title="Kesehatan Lansia" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Kesehatan Lansia</h1>
       <p className="mt-2 text-ink-600">Ringkasan pengukuran, jadwal obat sesuai resep, target, dan pengingat untuk profil lansia yang Anda dampingi. Aktifkan mode lansia di Akun &amp; Sesi untuk teks lebih besar.</p>
       <div className="mt-4 flex flex-col gap-1.5"><label className="text-sm font-medium" htmlFor="elder">Profil lansia</label>
         <select id="elder" className="min-h-12 rounded-btn border border-line bg-white px-3" value={profileId} onChange={(e) => setProfileId(e.target.value)}>
@@ -67,6 +68,6 @@ export function ElderPage() {
           {data.upcoming_reminders.length ? <ul className="mt-2">{data.upcoming_reminders.map((r) => <li key={r.id}>Pengingat: {r.title} — {r.scheduled_at}</li>)}</ul> : null}
         </section>
       </div> : null}
-    </main>
+    </main></>
   );
 }

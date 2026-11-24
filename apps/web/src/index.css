@@ -57,6 +57,46 @@
   --radius-card: 12px;
   --shadow-card: 0 1px 2px rgba(29, 25, 18, 0.06), 0 1px 3px rgba(29, 25, 18, 0.05);
   --shadow-lift: 0 4px 14px rgba(29, 25, 18, 0.1);
+
+  /* Token gerak: durasi & easing seragam untuk seluruh situs */
+  --dur-fast: 150ms;
+  --dur-med: 250ms;
+  --dur-slow: 400ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gerak antarmuka (revisi putaran 2): hanya transform & opacity, 150-400 ms.
+   Keadaan awal elemen reveal dipasang oleh JavaScript (kelas .rv) — tanpa JS
+   konten tetap terlihat penuh. prefers-reduced-motion menonaktifkan semuanya. */
+.rv { opacity: 0; transform: translateY(14px); }
+.rv.rv-in { opacity: 1; transform: none; transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.route-enter { animation: fadeSlideIn var(--dur-med) var(--ease-out); }
+@keyframes pulseDot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-3px); opacity: 1; } }
+.typing-dot { animation: pulseDot 1.2s ease-in-out infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.skeleton { background: linear-gradient(100deg, var(--color-cream) 40%, #fff 50%, var(--color-cream) 60%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: var(--radius-card); }
+.card-hover { transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.card-hover:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+details.faq .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-med) var(--ease-out); }
+details.faq[open ] .faq-body { grid-template-rows: 1fr; }
+details.faq .faq-body > div { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1; transform: none; }
+  .route-enter, .typing-dot, .skeleton { animation: none !important; }
+  .card-hover:hover { transform: none; }
+  details.faq .faq-body { transition: none; }
+}
+
+.siger-cluster { background: transparent; }
+.siger-cluster span { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 9999px; background: var(--color-brand-800); color: #fff; font-weight: 700; font-size: 14px; border: 2px solid #fff; box-shadow: var(--shadow-card); }
+
+/* Cetak hasil skrining (tamu): hanya kartu hasil yang tercetak */
+@media print {
+  header, footer, nav, .no-print { display: none !important; }
+  body { background: #fff; }
 }
 
 /* Mode lansia (Tahap 3): token font diperbesar lewat atribut pada <html> */

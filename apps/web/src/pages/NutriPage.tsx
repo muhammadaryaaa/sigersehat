@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -31,8 +32,8 @@ export function NutriPage() {
     } catch (err) { setError(err instanceof ApiClientError ? err.message : "Catatan tidak dapat disimpan."); }
   }
   return (
+    <> <PageHeader title="Gizi &amp; Pola Makan" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Gizi &amp; Pola Makan</h1>
       <p className="mt-2 text-ink-600">Target harian berasal dari aturan resmi Kemenkes/WHO. Catat capaian Anda dan pantau kemajuannya.</p>
       <div className="mt-4 flex flex-col gap-1.5"><label className="text-sm font-medium" htmlFor="np">Profil</label>
         <select id="np" className="min-h-12 rounded-btn border border-line bg-white px-3" value={profileId} onChange={(e) => setProfileId(e.target.value)}>
@@ -63,6 +64,6 @@ export function NutriPage() {
         </table>
         <p className="mt-2 text-sm text-ink-500">Nilai per 100 gram dari Tabel Komposisi Pangan Indonesia (TKPI) Kemenkes RI. Edukasi gizi lengkap tersedia di artikel Isi Piringku pada SIGEREDU.</p>
       </section>
-    </main>
+    </main></>
   );
 }

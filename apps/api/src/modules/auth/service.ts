@@ -47,8 +47,8 @@ export async function registerUser(db: D1Database, input: {
   const role: Role = input.accountType === "nakes" ? "nakes" : "masyarakat";
   const profileId = newId("prf");
   const statements = [
-    db.prepare("INSERT INTO users (id, email, password_hash, role, email_verified_at) VALUES (?,?,?,?,?)")
-      .bind(userId, input.email, passwordHash, role, nowSql()),
+    db.prepare("INSERT INTO users (id, email, password_hash, role, email_verified_at, health_data_consent_at) VALUES (?,?,?,?,?,?)")
+      .bind(userId, input.email, passwordHash, role, nowSql(), nowSql()),
     db.prepare("INSERT INTO health_profiles (id, owner_user_id, linked_user_id, relation, full_name, birth_date, sex, region_id) VALUES (?,?,?,?,?,?,?,?)")
       .bind(profileId, userId, userId, "self", input.fullName, input.birthDate, input.sex, input.regionId ?? null),
     db.prepare("INSERT INTO profile_preferences (profile_id) VALUES (?)").bind(profileId),

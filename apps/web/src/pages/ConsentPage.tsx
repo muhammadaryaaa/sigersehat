@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { PageHeader } from "../components/ui/PageHeader";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -28,8 +29,8 @@ export function ConsentPage() {
     catch { setError("Persetujuan tidak dapat dicabut."); }
   }
   return (
+    <> <PageHeader title="Izin &amp; Tenaga Kesehatan" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Izin &amp; Tenaga Kesehatan</h1>
       <p className="mt-2 text-ink-600">Tenaga kesehatan hanya dapat melihat data Anda bila Anda memberikan persetujuan di sini — dan hanya tenaga kesehatan yang sudah terverifikasi administrator yang tampil. Cabut kapan saja; akses berhenti seketika.</p>
       {notice ? <p role="status" className="mt-4 rounded-card bg-brand-50 p-3 text-brand-800">{notice}</p> : null}
       {error ? <p role="alert" className="mt-4 rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
@@ -55,6 +56,6 @@ export function ConsentPage() {
           <Button type="submit">Berikan Persetujuan</Button>
         </form> : <p className="mt-2 text-ink-600">Belum ada tenaga kesehatan terverifikasi pada sistem. Pendaftaran nakes diverifikasi administrator terlebih dahulu.</p>}
       </section>
-    </main>
+    </main></>
   );
 }

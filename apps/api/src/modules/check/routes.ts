@@ -9,7 +9,10 @@ import { calcBmi, classifyBmi, classifyBp, classifySugar, scoreFindrisc, recomme
 import type { Env } from "../auth/service";
 
 export const checkRoutes = new Hono<{ Bindings: Env }>();
-checkRoutes.use("*", requireAuth);
+// Daftar instrumen bersifat publik (tamu boleh melihat & memakai skrining tanpa menyimpan);
+// seluruh endpoint sesi tetap wajib masuk.
+checkRoutes.use("/sessions/*", requireAuth);
+checkRoutes.use("/sessions", requireAuth);
 
 async function ownedProfile(db: D1Database, userId: string, profileId: string) {
   const p = await db.prepare("SELECT * FROM health_profiles WHERE id = ? AND owner_user_id = ? AND is_active = 1").bind(profileId, userId).first<Record<string, unknown>>();

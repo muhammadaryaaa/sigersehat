@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
+// Preferensi tampilan tersimpan lokal (berlaku juga tanpa akun).
+try { if (localStorage.getItem("siger_display") === "elderly") document.documentElement.dataset.display = "elderly"; } catch { /* abaikan */ }
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

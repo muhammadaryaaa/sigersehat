@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate } from "../lib/auth";
 import { Button } from "../components/ui/Button";
+import { PageHeader } from "../components/ui/PageHeader";
 import { TextField } from "../components/ui/TextField";
 
 type Device = { id: string; device_label: string; device_type: string; computed_status: string; last_seen_at: string | null; readings_count: number; last_reading: { measured_at: string; spo2_percent: number | null; heart_rate_bpm: number | null; temperature_c: number | null } | null };
@@ -43,8 +44,8 @@ export function IotPage() {
     } catch (err) { setError(err instanceof Error ? err.message : "Pengiriman simulasi gagal."); }
   }
   return (
+    <> <PageHeader title="Perangkat IoT" />
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-3xl font-bold">Perangkat IoT</h1>
       <p className="mt-2 text-ink-600">Alur data: sensor → ESP32 → internet → API SIGERSEHAT → basis data → tampil di SIGERMONITOR. Perangkat dikenali lewat token unik; hanya hash token yang disimpan server.</p>
       <p className="mt-2 rounded-card bg-warn-50 p-3 text-warn-800">Sensor prototipe (mis. MAX30102) <strong>bukan</strong> perangkat medis tervalidasi. Nilai dari perangkat/simulasi bersifat pemantauan awal, bukan dasar diagnosis.</p>
       {notice ? <p role="status" className="mt-4 rounded-card bg-brand-50 p-3 text-brand-800">{notice}</p> : null}
@@ -85,6 +86,6 @@ export function IotPage() {
           <div className="sm:col-span-3"><Button type="submit">Kirim Data SIMULASI</Button></div>
         </form>
       </section>
-    </main>
+    </main></>
   );
 }
