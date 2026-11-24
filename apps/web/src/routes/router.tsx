@@ -25,6 +25,7 @@ import { ConsentPage } from "../pages/ConsentPage";
 import { MedPage } from "../pages/MedPage";
 import { AdminManagePage } from "../pages/AdminManagePage";
 import { InsightPage } from "../pages/InsightPage";
+import { IotPage } from "../pages/IotPage";
 import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -48,6 +49,7 @@ export const router = createBrowserRouter([
   { path: "/tumbuh", element: <ProtectedRoute roles={["masyarakat"]}><GrowPage /></ProtectedRoute> },
   { path: "/lansia", element: <ProtectedRoute roles={["masyarakat"]}><ElderPage /></ProtectedRoute> },
   { path: "/gizi", element: <ProtectedRoute roles={["masyarakat"]}><NutriPage /></ProtectedRoute> },
+  { path: "/iot", element: <ProtectedRoute roles={["masyarakat"]}><IotPage /></ProtectedRoute> },
   { path: "/tanya", element: <ProtectedRoute roles={["masyarakat"]}><AiPage /></ProtectedRoute> },
   { path: "/izin", element: <ProtectedRoute roles={["masyarakat"]}><ConsentPage /></ProtectedRoute> },
   { path: "/nakes/beranda", element: <ProtectedRoute roles={["nakes"]}><DashboardNakes /></ProtectedRoute> },

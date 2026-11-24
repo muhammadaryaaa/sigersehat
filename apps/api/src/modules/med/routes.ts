@@ -130,7 +130,11 @@ medRoutes.post("/tasks/:taskId/complete", async (c) => {
 
 // ---- Sisi pasien: direktori nakes terverifikasi & pengelolaan persetujuan ----
 export const consentRoutes = new Hono<{ Bindings: Env }>();
-consentRoutes.use("*", requireAuth);
+// PENTING: sub-aplikasi ini terpasang di "/" — middleware TIDAK boleh memakai pola "*"
+// karena akan bocor ke seluruh rute API (Hono menggabungkan middleware antar sub-aplikasi).
+consentRoutes.use("/consents", requireAuth);
+consentRoutes.use("/consents/*", requireAuth);
+consentRoutes.use("/nakes-directory", requireAuth);
 
 consentRoutes.get("/nakes-directory", async (c) => {
   const { results } = await c.env.DB.prepare(
