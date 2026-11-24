@@ -1,0 +1,6 @@
+# Salin menjadi .dev.vars untuk lokal (JANGAN commit .dev.vars)
+# Secret production: wrangler secret put <NAMA>
+SESSION_SECRET=dev-only-ganti-ini
+AI_API_KEY=
+AI_API_BASE_URL=
+AI_MODEL=

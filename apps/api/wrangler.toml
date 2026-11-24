@@ -1,0 +1,22 @@
+name = "sigersehat-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables NON-SECRET (secret wajib via `wrangler secret put`, jangan di sini)
+[vars]
+APP_ENV = "local"
+APP_ORIGIN = "http://localhost:5173"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sigersehat-db"
+database_id = "00000000-0000-0000-0000-000000000000" # GANTI sesudah `wrangler d1 create sigersehat-db`
+migrations_dir = "src/db/migrations"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "sigersehat-files"
+
+[triggers]
+crons = ["*/15 * * * *"] # pembuatan notifikasi pengingat & snapshot INSIGHT (Tahap 2 REC-03/Modul REMINDER)
