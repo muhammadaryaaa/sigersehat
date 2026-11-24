@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
+  --color-brand-800: #166534;
+  --color-brand-700: #15803d;
+  --color-brand-600: #16a34a;
+  --color-brand-50: #f0fdf4;
+  --color-info-700: #1d4ed8;
+  --color-info-800: #1e40af;
+  --color-info-50: #eff6ff;
+  --color-warn-700: #b45309;
+  --color-warn-800: #92400e;
+  --color-warn-50: #fffbeb;
+  --color-danger-700: #b91c1c;
+  --color-danger-50: #fef2f2;
+  --color-ink-900: #0f172a;
+  --color-ink-600: #475569;
+  --color-ink-500: #64748b;
+  --color-line: #e2e8f0;
+  --color-canvas: #f8fafc;
+  --radius-btn: 8px;
+  --radius-card: 12px;
+}
+
+/* Mode lansia (Tahap 3): token font diperbesar lewat atribut pada <html> */
+html[data-display="elderly"] { font-size: 18px; }
+
+body { @apply bg-canvas text-ink-900 font-sans antialiased; }
+:focus-visible { outline: 3px solid var(--color-brand-700); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
