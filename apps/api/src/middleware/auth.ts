@@ -1,5 +1,10 @@
 import type { Context, Next } from "hono";
 import { unauthorized, forbidden } from "../domain/errors";
+declare module "hono" {
+  interface ContextVariableMap {
+    actor: { id: string; role: import("@sigersehat/contracts").Role };
+  }
+}
 import type { Role } from "@sigersehat/contracts";
 // Kerangka autentikasi sesi opak (Tahap 2 AD-04): token cookie di-hash, dicocokkan ke tabel sessions.
 // Implementasi penuh sesi adalah pekerjaan Tahap Autentikasi; middleware ini menegakkan bentuk kontraknya sejak awal.
