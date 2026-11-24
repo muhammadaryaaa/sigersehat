@@ -1,8 +1,10 @@
 import { Hono } from "hono";
 import { requireAuth, requireRole } from "../../middleware/auth";
-import { notFound } from "../../domain/errors";
+import { ApiError, notFound } from "../../domain/errors";
 import { isDate, requireString, validationError, type FieldError } from "../../lib/validate";
 import { logAudit } from "../../lib/audit";
+import { newId } from "../../lib/crypto";
+import { nowSql } from "../../lib/time";
 import type { Env } from "../auth/service";
 
 export const profilesRoutes = new Hono<{ Bindings: Env }>();
@@ -86,4 +88,39 @@ profilesRoutes.get("/history", async (c) => {
     .map((i) => ({ kind: "immunization", at: i.at, title: "Imunisasi", detail: i, id: i.id }));
   const timeline = [...measurements, ...screenings, ...immunizations].sort((a, b) => String(b.at).localeCompare(String(a.at)));
   return c.json({ data: timeline });
+});
+
+// ---- Profil keluarga (manajemen dibuat HANYA di sini — putusan Bab 8 Tahap 1) ----
+profilesRoutes.post("/family", async (c) => {
+  const actor = c.get("actor");
+  const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
+  const errors: FieldError[] = [];
+  const fullName = requireString(body, "fullName", "Nama", errors, { min: 2, max: 120 });
+  const birthDate = requireString(body, "birthDate", "Tanggal lahir", errors);
+  if (birthDate && !isDate(birthDate)) errors.push({ field: "birthDate", message: "Format tanggal lahir tidak valid.", code: "format" });
+  const sex = body.sex === "male" || body.sex === "female" ? body.sex : null;
+  if (!sex) errors.push({ field: "sex", message: "Jenis kelamin wajib dipilih.", code: "required" });
+  const relation = ["child", "elderly", "other_family"].includes(String(body.relation)) ? String(body.relation) : null;
+  if (!relation) errors.push({ field: "relation", message: "Hubungan keluarga wajib dipilih.", code: "required" });
+  if (relation === "child" && body.guardianConsent !== true)
+    errors.push({ field: "guardianConsent", message: "Data anak hanya dapat dibuat dengan persetujuan Anda sebagai orang tua/wali.", code: "required" });
+  if (errors.length) throw validationError(errors);
+  const id = newId("prf");
+  await c.env.DB.prepare(`INSERT INTO health_profiles (id, owner_user_id, relation, full_name, birth_date, sex, region_id, blood_type, allergies, chronic_conditions, guardian_consent_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
+    .bind(id, actor.id, relation, fullName, birthDate, sex, typeof body.regionId === "string" ? body.regionId : null,
+      typeof body.bloodType === "string" ? body.bloodType : null, typeof body.allergies === "string" ? body.allergies : null,
+      typeof body.chronicConditions === "string" ? body.chronicConditions : null, relation === "child" ? nowSql() : null).run();
+  await logAudit(c.env.DB, { actorUserId: actor.id, actorRole: actor.role, action: relation === "child" ? "family.child_profile_created_with_guardian_consent" : "family.profile_created", objectType: "health_profile", objectId: id, profileId: id });
+  return c.json({ data: { profile_id: id } }, 201);
+});
+
+profilesRoutes.delete("/family/:id", async (c) => {
+  const actor = c.get("actor");
+  const p = await c.env.DB.prepare("SELECT id, relation FROM health_profiles WHERE id = ? AND owner_user_id = ?").bind(c.req.param("id"), actor.id).first<{ id: string; relation: string }>();
+  if (!p) throw notFound();
+  if (p.relation === "self") throw new ApiError(422, "conflict", "Profil diri tidak dapat dinonaktifkan dari sini.");
+  await c.env.DB.prepare("UPDATE health_profiles SET is_active = 0, updated_at = datetime('now') WHERE id = ?").bind(p.id).run();
+  await logAudit(c.env.DB, { actorUserId: actor.id, actorRole: actor.role, action: "family.profile_deactivated", objectType: "health_profile", objectId: p.id, profileId: p.id });
+  return c.json({ data: { deactivated: true } });
 });

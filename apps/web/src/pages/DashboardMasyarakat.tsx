@@ -33,6 +33,11 @@ export function DashboardMasyarakat() {
         <Link to="/pantau" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Catat &amp; Pantau</Link>
         <Link to="/pengingat" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Pengingat</Link>
         <Link to="/riwayat" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Riwayat</Link>
+        <Link to="/keluarga" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Keluarga</Link>
+        <Link to="/perempuan" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Perempuan</Link>
+        <Link to="/tumbuh" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Tumbuh Kembang</Link>
+        <Link to="/lansia" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Lansia</Link>
+        <Link to="/gizi" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Gizi</Link>
       </nav>
       {error ? <p role="alert" className="mt-6 rounded-card bg-danger-50 p-4 text-danger-700">{error}</p> : null}
       {!data && !error ? <p className="mt-6" aria-live="polite">Memuat data Anda…</p> : null}
