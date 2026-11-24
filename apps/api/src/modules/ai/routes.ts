@@ -129,7 +129,9 @@ aiRoutes.post("/conversations/:id/messages", async (c) => {
   const CONTEXT_TRIGGERS = ["skrining", "hasil", "risiko", "kategori", "jelaskan", "tekanan darah saya", "gula saya", "imt saya", "skor saya"];
   if (screeningContext && !CONTEXT_TRIGGERS.some((t) => lower.includes(t))) screeningContext = undefined;
 
-  // 5) Provider eksternal bila dikonfigurasi; selain itu penyusun retrieval lokal; production tanpa provider = 503 jujur.
+  // 5) Provider eksternal bila dikonfigurasi; selain itu Penyusun Retrieval terkurasi adalah
+  //    penyedia bawaan di SEMUA lingkungan: ia hanya menyusun jawaban dari sumber aktif yang
+  //    terambil (tidak pernah mengarang), sehingga aman menjadi bawaan production.
   const env = c.env as Env & { AI_API_KEY?: string; AI_API_BASE_URL?: string; AI_MODEL?: string };
   let result: { text: string; modelRef: string };
   if (env.AI_API_KEY && env.AI_API_BASE_URL && env.AI_MODEL) {
@@ -141,10 +143,8 @@ aiRoutes.post("/conversations/:id/messages", async (c) => {
       result = new RetrievalComposer().compose(content, sources, screeningContext);
       result = { ...result, modelRef: "retrieval-fallback" };
     }
-  } else if (env.APP_ENV === "local") {
-    result = new RetrievalComposer().compose(content, sources, screeningContext);
   } else {
-    throw new ApiError(503, "service_unavailable", "Layanan SIGERAI belum dikonfigurasi pada lingkungan ini. Artikel SIGEREDU tetap dapat dibaca.");
+    result = new RetrievalComposer().compose(content, sources, screeningContext);
   }
 
   // 6) Pemeriksaan keluaran: pola diagnosis pasti / kategori skrining yang diubah model → diganti aman + ditandai.

@@ -1,0 +1,22 @@
+# Contoh konfigurasi production — salin nilai ke wrangler.toml saat deployment (docs/DEPLOYMENT.md).
+# JANGAN menaruh secret di berkas ini; secret memakai `wrangler secret put`.
+name = "sigersehat-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+[vars]
+APP_ENV = "production"
+APP_ORIGIN = "https://sigersehat.pages.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sigersehat-db"
+database_id = "<ISI DARI wrangler d1 create>"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "sigersehat-files"
+
+[triggers]
+crons = ["*/15 * * * *"]

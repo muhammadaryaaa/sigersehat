@@ -53,3 +53,14 @@ Catatan: `database_id` pada `wrangler.toml` masih placeholder — ganti sesudah 
 ## Keamanan (ringkas)
 
 Sesi opak via cookie httpOnly (token tersimpan ter-hash), RBAC 4 lapis, audit log insert-only berantai-hash, data kesehatan tidak pernah di URL/log/penyimpanan browser. Rincian: PRD Bab Keamanan (SEC-01 s.d. SEC-14) dan Tahap 2 Bab 9–10.
+
+## Dokumentasi
+- Instalasi lokal: [docs/INSTALASI.md](docs/INSTALASI.md)
+- Penggunaan per peran: [docs/PENGGUNAAN.md](docs/PENGGUNAAN.md)
+- Database & migrasi: [docs/DATABASE.md](docs/DATABASE.md)
+- API: [docs/API.md](docs/API.md)
+- Deployment Cloudflare & backup/pemulihan: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+- Laporan pengujian: [docs/LAPORAN-PENGUJIAN.md](docs/LAPORAN-PENGUJIAN.md)
+
+## Status deployment (24 November 2026)
+Build produksi terverifikasi lokal; deployment Cloudflare **belum dijalankan** — menunggu penambahan izin token (D1/Pages/R2) sesuai docs/DEPLOYMENT.md Bagian 0.
