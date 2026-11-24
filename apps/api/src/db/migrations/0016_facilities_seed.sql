@@ -1,0 +1,9 @@
+-- Fasilitas awal SIGERMAP: HANYA entri yang ditemukan pada OpenStreetMap (Nominatim) pada 24 Nov 2026,
+-- dengan alamat tampil OSM sebagai alamat. Telepon TIDAK diisi karena tidak terverifikasi (dibiarkan kosong,
+-- bukan dikarang). Status 'verified' merujuk pada keberadaan+koordinat OSM; admin wajib verifikasi berkala.
+INSERT OR IGNORE INTO facilities (id, name, facility_type, address, region_id, latitude, longitude, has_igd, source_name, source_url, verification_status, verified_at) VALUES
+ ('fac-rsud-menggala', 'RSUD Menggala', 'rumah_sakit', 'Jalan Lintas Sumatera, Tiuh Tohou, Menggala, Tulang Bawang, Lampung 34693', 'reg-1806', -4.5466298, 105.2215431, NULL, 'OpenStreetMap (Nominatim)', 'https://www.openstreetmap.org/search?query=RSUD+Menggala', 'verified', '2026-11-24'),
+ ('fac-rsud-ahmad-yani', 'RSUD Jenderal Ahmad Yani Metro', 'rumah_sakit', 'Jalan Ahmad Yani No. 13, Tejoagung, Metro, Lampung 34124', 'reg-1872', -5.1161008, 105.3106847, NULL, 'OpenStreetMap (Nominatim)', 'https://www.openstreetmap.org/search?query=RSUD+Ahmad+Yani+Metro', 'verified', '2026-11-24'),
+ ('fac-rsud-pringsewu', 'RSUD Pringsewu', 'rumah_sakit', 'Jalan Pring Sewu - Kota Agung, Fajar Agung, Pringsewu, Lampung 35373', 'reg-1810', -5.3688079, 104.9373583, NULL, 'OpenStreetMap (Nominatim)', 'https://www.openstreetmap.org/search?query=RSUD+Pringsewu', 'verified', '2026-11-24'),
+ ('fac-pkm-sukarame', 'Puskesmas Sukarame', 'puskesmas', 'Gang Puskesmas, Campang Raya, Bandar Lampung, Lampung 35122', 'reg-1871', -5.4052479, 105.3025252, 0, 'OpenStreetMap (Nominatim)', 'https://www.openstreetmap.org/search?query=Puskesmas+Sukarame+Bandar+Lampung', 'verified', '2026-11-24'),
+ ('fac-pkm-kedaton', 'Puskesmas Kedaton', 'puskesmas', 'Gang Puskesmas, Sukamenanti, Bandar Lampung, Lampung 35123', 'reg-1871', -5.3959139, 105.2522711, 0, 'OpenStreetMap (Nominatim)', 'https://www.openstreetmap.org/search?query=Puskesmas+Kedaton+Bandar+Lampung', 'verified', '2026-11-24');

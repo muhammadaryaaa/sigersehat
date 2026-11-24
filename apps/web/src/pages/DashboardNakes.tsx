@@ -32,6 +32,7 @@ export function DashboardNakes() {
         <section className="mt-8"><h2 className="text-xl font-bold">Pasien Saya</h2>
           <p className="mt-3 text-ink-600">Pasien dengan izin aktif: {data.active_patients}. Daftar pasien lengkap dibangun pada tahap SIGERMED.</p></section>
       </> : null}
+    <p className="mt-6"><a className="rounded-btn bg-brand-600 px-4 py-2 font-semibold text-white" href="/nakes/pasien">Buka Ruang Pasien (SIGERMED)</a></p>
     </main>
   );
 }

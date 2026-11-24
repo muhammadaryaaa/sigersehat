@@ -20,6 +20,11 @@ import { WomenPage } from "../pages/WomenPage";
 import { GrowPage } from "../pages/GrowPage";
 import { ElderPage } from "../pages/ElderPage";
 import { NutriPage } from "../pages/NutriPage";
+import { MapPage } from "../pages/MapPage";
+import { ConsentPage } from "../pages/ConsentPage";
+import { MedPage } from "../pages/MedPage";
+import { AdminManagePage } from "../pages/AdminManagePage";
+import { InsightPage } from "../pages/InsightPage";
 import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -31,7 +36,7 @@ export const router = createBrowserRouter([
   { path: "/edukasi", element: <EduPage /> },
   { path: "/edukasi/:slug", element: <ArticlePage /> },
   { path: "/kuis/:id", element: <QuizPage /> },
-  { path: "/peta", element: <PlaceholderPage title="Peta Fasilitas Kesehatan" /> },
+  { path: "/peta", element: <MapPage /> },
   { path: "/beranda", element: <ProtectedRoute roles={["masyarakat", "nakes"]}><DashboardMasyarakat /></ProtectedRoute> },
   { path: "/akun", element: <ProtectedRoute roles={["masyarakat", "nakes", "admin", "super_admin"]}><AccountPage /></ProtectedRoute> },
   { path: "/skrining", element: <ProtectedRoute roles={["masyarakat"]}><ScreeningPage /></ProtectedRoute> },
@@ -44,9 +49,12 @@ export const router = createBrowserRouter([
   { path: "/lansia", element: <ProtectedRoute roles={["masyarakat"]}><ElderPage /></ProtectedRoute> },
   { path: "/gizi", element: <ProtectedRoute roles={["masyarakat"]}><NutriPage /></ProtectedRoute> },
   { path: "/tanya", element: <ProtectedRoute roles={["masyarakat"]}><AiPage /></ProtectedRoute> },
-  { path: "/izin", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Izin & Privasi" /></ProtectedRoute> },
+  { path: "/izin", element: <ProtectedRoute roles={["masyarakat"]}><ConsentPage /></ProtectedRoute> },
   { path: "/nakes/beranda", element: <ProtectedRoute roles={["nakes"]}><DashboardNakes /></ProtectedRoute> },
+  { path: "/nakes/pasien", element: <ProtectedRoute roles={["nakes"]}><MedPage /></ProtectedRoute> },
   { path: "/admin/beranda", element: <ProtectedRoute roles={["admin", "super_admin"]}><DashboardAdmin /></ProtectedRoute> },
   { path: "/admin/konten", element: <ProtectedRoute roles={["admin", "super_admin"]}><AdminEduPage /></ProtectedRoute> },
+  { path: "/admin/kelola", element: <ProtectedRoute roles={["admin", "super_admin"]}><AdminManagePage /></ProtectedRoute> },
+  { path: "/admin/insight", element: <ProtectedRoute roles={["admin", "super_admin"]}><InsightPage /></ProtectedRoute> },
   { path: "*", element: <PlaceholderPage title="Halaman Tidak Ditemukan" /> },
 ]);

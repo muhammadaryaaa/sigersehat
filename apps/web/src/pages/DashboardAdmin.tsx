@@ -30,6 +30,11 @@ export function DashboardAdmin() {
       </ul> : null}
       {isSuper && data ? <section className="mt-8"><h2 className="text-xl font-bold">Pengaturan Sistem</h2>
         {Array.isArray(data.system_settings) && data.system_settings.length ? <p className="mt-2">Terdapat {data.system_settings.length} pengaturan tersimpan.</p> : <p className="mt-2 text-ink-600">Belum ada pengaturan sistem tersimpan. Pengelolaan pengaturan hanya untuk Super Administrator.</p>}</section> : null}
+    <nav className="mt-6 flex flex-wrap gap-2" aria-label="Pengelolaan">
+        <a className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800" href="/admin/kelola">Kelola Sistem</a>
+        <a className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800" href="/admin/konten">Konten Edukasi</a>
+        <a className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800" href="/admin/insight">SIGERINSIGHT</a>
+      </nav>
     </main>
   );
 }

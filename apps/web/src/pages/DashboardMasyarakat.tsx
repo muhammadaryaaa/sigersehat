@@ -38,6 +38,8 @@ export function DashboardMasyarakat() {
         <Link to="/tumbuh" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Tumbuh Kembang</Link>
         <Link to="/lansia" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Lansia</Link>
         <Link to="/gizi" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Gizi</Link>
+        <Link to="/izin" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Izin & Nakes</Link>
+        <Link to="/peta" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Peta Faskes</Link>
       </nav>
       {error ? <p role="alert" className="mt-6 rounded-card bg-danger-50 p-4 text-danger-700">{error}</p> : null}
       {!data && !error ? <p className="mt-6" aria-live="polite">Memuat data Anda…</p> : null}
