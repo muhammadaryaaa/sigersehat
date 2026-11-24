@@ -1,12 +1,41 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+/* Font self-host (WOFF2 variable, subset latin, font-display: swap) — tanpa Google Fonts CDN.
+   Lora untuk judul (serif institusional), Plus Jakarta Sans untuk isi. */
+@font-face {
+  font-family: "Lora";
+  src: url("/fonts/lora-variable.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
-  --color-brand-800: #166534;
-  --color-brand-700: #15803d;
-  --color-brand-600: #16a34a;
-  --color-brand-50: #f0fdf4;
+  --font-display: "Lora", "Georgia", serif;
+
+  /* Warna fungsional kesehatan: hijau teal tua */
+  --color-brand-800: #0c4a42;
+  --color-brand-700: #0e5a4f;
+  --color-brand-600: #12705f;
+  --color-brand-50: #e9f3ef;
+
+  /* Aksen tapis: merah marun */
+  --color-accent-800: #711c2a;
+  --color-accent-700: #822333;
+  --color-accent-600: #973048;
+  --color-accent-50: #f9ece8;
+
+  /* Aksen siger: emas redup (teks hanya gold-700; gold-500 khusus dekorasi) */
+  --color-gold-700: #86620c;
+  --color-gold-500: #be9a44;
+
   --color-info-700: #1d4ed8;
   --color-info-800: #1e40af;
   --color-info-50: #eff6ff;
@@ -15,21 +44,37 @@
   --color-warn-50: #fffbeb;
   --color-danger-700: #b91c1c;
   --color-danger-50: #fef2f2;
-  --color-ink-900: #0f172a;
-  --color-ink-600: #475569;
-  --color-ink-500: #64748b;
-  --color-line: #e2e8f0;
-  --color-canvas: #f8fafc;
+
+  /* Netral hangat */
+  --color-ink-900: #1d1912;
+  --color-ink-600: #55504a;
+  --color-ink-500: #6e675e;
+  --color-line: #e3dccb;
+  --color-canvas: #faf6ed;
+  --color-cream: #f4edde;
+
   --radius-btn: 8px;
   --radius-card: 12px;
+  --shadow-card: 0 1px 2px rgba(29, 25, 18, 0.06), 0 1px 3px rgba(29, 25, 18, 0.05);
+  --shadow-lift: 0 4px 14px rgba(29, 25, 18, 0.1);
 }
 
 /* Mode lansia (Tahap 3): token font diperbesar lewat atribut pada <html> */
 html[data-display="elderly"] { font-size: 18px; }
 
-body { @apply bg-canvas text-ink-900 font-sans antialiased; }
+body { @apply bg-canvas text-ink-900 font-sans antialiased; line-height: 1.6; }
+h1, h2 { font-family: var(--font-display); letter-spacing: -0.01em; }
 :focus-visible { outline: 3px solid var(--color-brand-700); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Pembatas motif tapis: pola belah ketupat tipis marun-emas, dipakai sebagai pemisah antarbagian.
+   SVG geometris sederhana (bukan gambar/foto), digambar sebagai pola CSS. */
+.tapis-band {
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M6 1 L11 6 L6 11 L1 6 Z' fill='none' stroke='%23711c2a' stroke-opacity='0.55' stroke-width='1.2'/%3E%3Cpath d='M18 1 L23 6 L18 11 L13 6 Z' fill='none' stroke='%23be9a44' stroke-opacity='0.7' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+}
 
 /* Atribusi OpenStreetMap pada peta: ukuran teks & area sentuh diperbesar dari bawaan Leaflet */
 .leaflet-container .leaflet-control-attribution { font-size: 12px; line-height: 1.9; padding: 3px 6px; }
@@ -37,5 +82,5 @@ body { @apply bg-canvas text-ink-900 font-sans antialiased; }
 
 /* Penanda peta CSS murni (pengganti ikon gambar Leaflet yang rusak oleh bundler) */
 .siger-marker { background: transparent; border: none; }
-.siger-marker span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #166534; border: 3px solid #ffffff; box-shadow: 0 1px 5px rgba(0,0,0,.45); position: relative; }
+.siger-marker span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #0c4a42; border: 3px solid #ffffff; box-shadow: 0 1px 5px rgba(0,0,0,.45); position: relative; }
 .siger-marker span::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: #ffffff; }

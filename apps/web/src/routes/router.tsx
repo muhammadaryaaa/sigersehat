@@ -29,6 +29,7 @@ import { InsightPage } from "../pages/InsightPage";
 import { IotPage } from "../pages/IotPage";
 import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 import { AppShell } from "../components/ui/AppShell";
+import { AboutPage, ServiceLimitsPage, PrivacyPage } from "../pages/InfoPages";
 
 export const router = createBrowserRouter([
   { path: "/", element: <AppShell><LandingPage /></AppShell> },
@@ -36,6 +37,9 @@ export const router = createBrowserRouter([
   { path: "/daftar", element: <RegisterPage /> },
   { path: "/lupa-kata-sandi", element: <ForgotPage /> },
   { path: "/atur-ulang", element: <ResetPage /> },
+  { path: "/tentang", element: <AppShell><AboutPage /></AppShell> },
+  { path: "/batasan-layanan", element: <AppShell><ServiceLimitsPage /></AppShell> },
+  { path: "/kebijakan-privasi", element: <AppShell><PrivacyPage /></AppShell> },
   { path: "/edukasi", element: <AppShell><EduPage /></AppShell> },
   { path: "/edukasi/:slug", element: <AppShell><ArticlePage /></AppShell> },
   { path: "/kuis/:id", element: <AppShell><QuizPage /></AppShell> },

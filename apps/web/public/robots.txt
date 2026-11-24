@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /nakes/
+Disallow: /akun
+
+Sitemap: https://sigersehat.pages.dev/sitemap.xml

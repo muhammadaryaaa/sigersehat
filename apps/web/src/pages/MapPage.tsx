@@ -21,6 +21,8 @@ export function MapPage() {
   const [q, setQ] = useState(""); const [type, setType] = useState("");
   const [selected, setSelected] = useState<Facility | null>(null);
   const [notice, setNotice] = useState("");
+  const [myPos, setMyPos] = useState<{ lat: number; lng: number } | null>(null);
+  const [locMsg, setLocMsg] = useState("");
   const mapRef = useRef<HTMLDivElement>(null);
   const mapObj = useRef<L.Map | null>(null);
   const markers = useRef<L.LayerGroup | null>(null);
@@ -45,6 +47,24 @@ export function MapPage() {
     }
   }, [facilities]);
 
+  function distanceKm(f: Facility): number | null {
+    if (!myPos) return null;
+    const R = 6371, dLat = (f.latitude - myPos.lat) * Math.PI / 180, dLng = (f.longitude - myPos.lng) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(myPos.lat * Math.PI / 180) * Math.cos(f.latitude * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+  function nearMe() {
+    setLocMsg("Lokasi Anda hanya dipakai di perangkat ini untuk mengurutkan fasilitas terdekat; tidak dikirim atau disimpan.");
+    if (!navigator.geolocation) { setLocMsg("Perangkat ini tidak menyediakan lokasi. Daftar tetap dapat dicari manual."); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { const p = { lat: pos.coords.latitude, lng: pos.coords.longitude }; setMyPos(p); mapObj.current?.setView([p.lat, p.lng], 12); },
+      () => setLocMsg("Izin lokasi tidak diberikan. Daftar tetap dapat dicari manual tanpa lokasi."),
+      { timeout: 10000 },
+    );
+  }
+  const shown = myPos ? [...facilities].sort((a, b) => (distanceKm(a) ?? 0) - (distanceKm(b) ?? 0)) : facilities;
+  const lastVerified = facilities.reduce((acc, f) => (f.verified_at > acc ? f.verified_at : acc), "");
+
   async function report(f: Facility) {
     const desc = prompt(`Laporkan koreksi untuk ${f.name} (jelaskan data yang keliru dan seharusnya):`);
     if (!desc) return;
@@ -54,7 +74,12 @@ export function MapPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-3xl font-bold">Peta Fasilitas Kesehatan</h1>
-      <p className="mt-2 text-ink-600">Hanya fasilitas terverifikasi yang tampil. Data awal bersumber dari OpenStreetMap (diverifikasi 24 Nov 2026) dan dikelola administrator; jumlahnya akan bertambah lewat verifikasi resmi Dinas Kesehatan.</p>
+      <p className="mt-2 text-ink-600">Menampilkan <strong>sebagian fasilitas kesehatan terpilih</strong> yang telah diverifikasi satu per satu — ini bukan direktori lengkap seluruh Lampung. Untuk fasilitas lain di Lampung, gunakan pencarian di <a className="font-semibold text-brand-800 underline" href="https://www.openstreetmap.org" target="_blank" rel="noreferrer">OpenStreetMap</a>.</p>
+      {lastVerified ? <p className="mt-1 text-sm text-ink-500">Data terakhir diverifikasi: {lastVerified.slice(0, 10)}. Menemukan data yang keliru? Buka fasilitasnya lalu gunakan tombol Laporkan Koreksi.</p> : null}
+      <div className="mt-3">
+        <Button type="button" variant="secondary" onClick={nearMe}>Dekat saya</Button>
+        {locMsg ? <p className="mt-2 text-sm text-ink-600" role="status">{locMsg}</p> : null}
+      </div>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row" role="search">
         <TextField label="Cari fasilitas" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="mis. puskesmas, RSUD" />
         <div className="flex flex-col gap-1.5"><label className="text-sm font-medium" htmlFor="ft">Jenis</label>
@@ -68,12 +93,12 @@ export function MapPage() {
         <div ref={mapRef} className="h-96 rounded-card border border-line lg:col-span-3" role="application" aria-label="Peta fasilitas kesehatan Lampung" />
         <div className="lg:col-span-2">
           <ul className="flex max-h-96 flex-col gap-2 overflow-auto">
-            {facilities.map((f) => <li key={f.id}>
+            {shown.map((f) => <li key={f.id}>
               <button className={`w-full rounded-card border p-3 text-left ${selected?.id === f.id ? "border-brand-600 bg-brand-50" : "border-line bg-white"}`} onClick={() => { setSelected(f); mapObj.current?.setView([f.latitude, f.longitude], 14); }}>
-                <strong>{f.name}</strong><br /><span className="text-sm text-ink-600">{TYPE_LABEL[f.facility_type]} • {f.region_name}</span>
+                <strong>{f.name}</strong><br /><span className="text-sm text-ink-600">{TYPE_LABEL[f.facility_type]} • {f.region_name}{distanceKm(f) !== null ? ` • ±${distanceKm(f)!.toFixed(1)} km` : ""}</span>
               </button></li>)}
           </ul>
-          {!facilities.length ? <p className="text-ink-600">Tidak ada fasilitas terverifikasi yang cocok. Coba kata kunci lain.</p> : null}
+          {!shown.length ? <p className="text-ink-600">Tidak ada fasilitas terverifikasi yang cocok. Coba kata kunci lain.</p> : null}
         </div>
       </div>
       {selected ? <section aria-labelledby="detail" className="mt-4 rounded-card border border-line bg-white p-5">

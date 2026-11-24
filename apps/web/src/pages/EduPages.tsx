@@ -51,6 +51,13 @@ export function EduPage() {
 }
 
 type ArticleDetail = ArticleListItem & { body_md: string; source_url: string; references: { title: string; publisher: string; url: string }[]; quiz: { id: string; title: string } | null };
+const ARTICLE_PHOTO: Record<string, { src: string; alt: string; credit: string }> = {
+  ptm: { src: "cek-tekanan-darah", alt: "Petugas kesehatan memeriksa tekanan darah warga", credit: "Foto: rawpixel.com (CC0), Wikimedia Commons." },
+  gizi: { src: "pasar-sayur", alt: "Pedagang sayuran di pasar tradisional", credit: "Foto: Tyo Satriany (CC BY-SA 4.0), Wikimedia Commons." },
+  ibu_anak: { src: "ibu-anak-timbang", alt: "Kader menimbang bayi dengan timbangan gantung di pos pelayanan", credit: "Foto: USAID Indonesia (domain publik), Wikimedia Commons." },
+  imunisasi: { src: "posyandu", alt: "Kegiatan posyandu: ibu dan anak dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0), Wikimedia Commons." },
+};
+
 export function ArticlePage() {
   const { slug } = useParams();
   const [article, setArticle] = useState<ArticleDetail | null>(null);
@@ -62,6 +69,10 @@ export function ArticlePage() {
     <main className="mx-auto max-w-3xl px-4 py-8">
       <Link to="/edukasi" className="font-medium text-brand-700 underline">Kembali ke daftar artikel</Link>
       <h1 className="mt-4 text-3xl font-bold">{article.title}</h1>
+      <figure className="mt-5">
+        <img src={`/images/${ARTICLE_PHOTO[article.category]?.src ?? "posyandu"}-960.webp`} srcSet={`/images/${ARTICLE_PHOTO[article.category]?.src ?? "posyandu"}-480.webp 480w, /images/${ARTICLE_PHOTO[article.category]?.src ?? "posyandu"}-960.webp 960w, /images/${ARTICLE_PHOTO[article.category]?.src ?? "posyandu"}-1600.webp 1600w`} sizes="(max-width: 768px) 100vw, 768px" width={960} height={640} alt={ARTICLE_PHOTO[article.category]?.alt ?? "Kegiatan kesehatan masyarakat di Indonesia"} loading="lazy" className="aspect-[16/9] w-full rounded-card object-cover" />
+        <figcaption className="mt-2 text-xs text-ink-500">{ARTICLE_PHOTO[article.category]?.credit ?? "Foto: Kanoman123 (CC BY-SA 4.0), Wikimedia Commons."}</figcaption>
+      </figure>
       <p className="mt-2 text-sm text-ink-500">{CATEGORY_LABEL[article.category] ?? article.category} • Sumber: {article.source_name} • Terbit {article.published_at}</p>
       <div className="mt-6 flex flex-col gap-4 text-lg leading-relaxed">
         {article.body_md.split(/\n\n+/).map((para, i) => <p key={i}>{para}</p>)}
