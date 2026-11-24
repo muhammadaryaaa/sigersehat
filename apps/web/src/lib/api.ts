@@ -13,7 +13,7 @@ export class ApiClientError extends Error {
   }
 }
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, { credentials: "include", headers: { "Content-Type": "application/json" }, ...init });
+  const res = await fetch(`${BASE}${path}`, { credentials: "include", ...init, headers: { "Content-Type": "application/json", ...(init?.headers as Record<string, string> | undefined) } });
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as ApiErrorBody | null;
     throw new ApiClientError(body?.error.code ?? "internal_error", body?.error.message ?? "Terjadi kesalahan. Silakan coba lagi.", res.status, body?.error.details);

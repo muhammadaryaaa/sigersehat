@@ -31,7 +31,7 @@ export function ScreeningPage() {
       const res = await apiMutate<Result>(`/api/v1/screening/sessions/${session.session_id}/complete`, "POST", { measurements: { ...numeric, sugarContext: mm.sugarContext }, answers, idempotencyKey: crypto.randomUUID() });
       setResult(res);
     } catch (err) {
-      setError(err instanceof ApiClientError ? err.message : "Skrining tidak dapat diselesaikan.");
+      setError(err instanceof ApiClientError ? err.message : `Skrining tidak dapat diselesaikan. Sebab: ${err instanceof Error ? err.message : "kesalahan tidak dikenal"}. Periksa koneksi Anda lalu coba lagi.`);
     } finally { setBusy(false); }
   }
   if (result) return (

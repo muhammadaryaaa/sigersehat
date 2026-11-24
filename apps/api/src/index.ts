@@ -26,6 +26,10 @@ app.use("*", errorMiddleware);
 app.use("/api/*", csrfMiddleware);
 app.use("/api/*", cors({ origin: (origin, c) => (origin === c.env.APP_ORIGIN ? origin : null), credentials: true }));
 
+// Halaman akar API: informasi layanan agar alamat dasar tidak tampil sebagai galat.
+app.get("/", (c) => c.json({ data: { service: "SIGERSEHAT API", status: "online", website: "https://sigersehat.pages.dev", health: "/health", api_base: "/api/v1", documentation: "https://github.com/muhammadaryaaa/sigersehat/blob/main/docs/API.md" } }));
+app.get("/api/v1", (c) => c.json({ data: { service: "SIGERSEHAT API", version: "v1", modules: ["auth", "profiles", "dashboard", "screening", "measurements", "reminders", "notifications", "edu", "ai", "women", "grow", "elder", "nutri", "facilities", "med", "consents", "insights", "admin", "iot", "regions"] } }));
+
 // REC-03: health check publik — hanya status, tanpa data.
 app.get("/health", async (c) => {
   try { await c.env.DB.prepare("SELECT 1").first(); return c.json({ data: { status: "ok", db: "ok", env: c.env.APP_ENV } }); }
