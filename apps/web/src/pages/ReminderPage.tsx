@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { formatDateTime } from "../lib/format";
 import { apiFetch } from "../lib/api";
 import { apiMutate, useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -35,7 +36,7 @@ export function ReminderPage() {
       <h1 className="text-3xl font-bold">Pengingat</h1>
       {notifs.some((n) => !n.is_read) ? <section aria-labelledby="notif" className="mt-6">
         <h2 id="notif" className="text-xl font-bold">Notifikasi</h2>
-        <ul className="mt-3 flex flex-col gap-2">{notifs.filter((n) => !n.is_read).map((n) => <li key={n.id} className="flex items-center justify-between gap-3 rounded-card bg-warn-50 p-4 text-warn-800">
+        <ul className="mt-3 flex flex-col gap-2">{notifs.filter((n) => !n.is_read).map((n) => <li key={n.id} className="flex flex-wrap items-center justify-between gap-3 rounded-card bg-warn-50 p-4 text-warn-800">
           <span><strong>{n.title}</strong> — {n.body}</span><Button variant="secondary" onClick={() => readNotif(n.id)}>Tandai Dibaca</Button></li>)}</ul></section> : null}
       <section aria-labelledby="baru" className="mt-8">
         <h2 id="baru" className="text-xl font-bold">Buat Pengingat</h2>
@@ -54,11 +55,11 @@ export function ReminderPage() {
         <h2 id="mendatang" className="text-xl font-bold">Mendatang &amp; Jatuh Tempo</h2>
         {upcoming.length ? <ul className="mt-3 flex flex-col gap-2">{upcoming.map((r) => <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-white p-4">
           <span><strong>{r.title}</strong> — {r.scheduled_at} <span className="text-sm text-ink-500">({r.status === "sent" ? "Jatuh tempo" : r.status === "snoozed" ? "Ditunda" : "Terjadwal"})</span></span>
-          <span className="flex gap-2"><Button variant="secondary" onClick={() => act(r.id, "snooze")}>Tunda 1 Hari</Button><Button onClick={() => act(r.id, "done")}>Selesai</Button><Button variant="danger" onClick={() => act(r.id, "cancel")}>Batalkan</Button></span></li>)}</ul>
+          <span className="flex flex-wrap gap-2"><Button variant="secondary" onClick={() => act(r.id, "snooze")}>Tunda 1 Hari</Button><Button onClick={() => act(r.id, "done")}>Selesai</Button><Button variant="danger" onClick={() => act(r.id, "cancel")}>Batalkan</Button></span></li>)}</ul>
           : <p className="mt-3 text-ink-600">Tidak ada pengingat aktif.</p>}
       </section>
       {done.length ? <section aria-labelledby="selesai" className="mt-8"><h2 id="selesai" className="text-xl font-bold">Selesai &amp; Dibatalkan</h2>
-        <ul className="mt-3 flex flex-col gap-2">{done.map((r) => <li key={r.id} className="rounded-card border border-line bg-white p-4 text-ink-600">{r.title} — {r.scheduled_at} ({r.status === "done" ? "Selesai" : "Dibatalkan"})</li>)}</ul></section> : null}
+        <ul className="mt-3 flex flex-col gap-2">{done.map((r) => <li key={r.id} className="rounded-card border border-line bg-white p-4 text-ink-600">{r.title} — {formatDateTime(r.scheduled_at)} ({r.status === "done" ? "Selesai" : "Dibatalkan"})</li>)}</ul></section> : null}
     </main>
   );
 }

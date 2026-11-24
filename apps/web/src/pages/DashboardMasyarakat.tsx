@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { formatDateTime } from "../lib/format";
 import { apiFetch } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -20,7 +21,7 @@ export function DashboardMasyarakat() {
   useEffect(() => { apiFetch<Dash>("/api/v1/dashboard/masyarakat").then(setData).catch(() => setError("Data beranda tidak dapat dimuat. Coba muat ulang halaman.")); }, []);
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
-      <header className="flex items-start justify-between gap-4">
+      <header className="flex flex-wrap items-start justify-between gap-4">
         <div><p className="text-lg font-extrabold tracking-tight text-brand-800">SIGERSEHAT</p>
           <h1 className="mt-1 text-2xl font-bold">Halo, {me?.profile?.full_name ?? "Pengguna"}</h1></div>
         <div className="flex gap-2">
@@ -62,7 +63,7 @@ export function DashboardMasyarakat() {
         </section>
         <section aria-labelledby="langkah" className="mt-8">
           <h2 id="langkah" className="text-xl font-bold">Langkah Berikutnya</h2>
-          {data.next_reminders.length ? <ul className="mt-3 flex flex-col gap-2">{data.next_reminders.map((r) => <li key={r.id} className="rounded-card border border-line bg-white p-4">{r.title} — {r.scheduled_at}</li>)}</ul>
+          {data.next_reminders.length ? <ul className="mt-3 flex flex-col gap-2">{data.next_reminders.map((r) => <li key={r.id} className="rounded-card border border-line bg-white p-4">{r.title} — {formatDateTime(r.scheduled_at)}</li>)}</ul>
             : <p className="mt-3 text-ink-600">Tidak ada pengingat terjadwal. {data.last_screening ? `Skrining terakhir: risiko ${data.last_screening.risk_category}.` : "Skrining berkala membantu memantau risiko Anda."}</p>}
           {data.unread_notifications ? <p className="mt-2 text-sm">Notifikasi belum dibaca: {data.unread_notifications}</p> : null}
         </section>

@@ -77,7 +77,7 @@ export function IotPage() {
       </section>
       <section aria-labelledby="sim" className="mt-8">
         <h2 id="sim" className="text-xl font-bold">Simulator Data (SIMULASI)</h2>
-        <p className="mt-1 text-ink-600">Kirim data uji melalui jalur ingest yang sama persis dengan perangkat fisik, memakai token simulator yang baru dibuat di atas. Hasilnya masuk ke <Link className="font-semibold text-brand-700 underline" to="/pantau">SIGERMONITOR</Link> dengan label SIMULASI.</p>
+        <p className="mt-1 text-ink-600">Kirim data uji melalui jalur ingest yang sama persis dengan perangkat fisik, memakai token simulator yang baru dibuat di atas. Hasilnya masuk ke <Link className="inline-block py-1 font-semibold text-brand-700 underline" to="/pantau">SIGERMONITOR</Link> dengan label SIMULASI.</p>
         <form onSubmit={sendSimulation} className="mt-3 grid gap-4 sm:grid-cols-3">
           <TextField label="SpO2 (%)" type="number" value={sim.spo2} onChange={(e) => setSim({ ...sim, spo2: e.target.value })} />
           <TextField label="Denyut (bpm)" type="number" value={sim.hr} onChange={(e) => setSim({ ...sim, hr: e.target.value })} />

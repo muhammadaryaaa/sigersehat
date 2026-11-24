@@ -30,3 +30,7 @@ html[data-display="elderly"] { font-size: 18px; }
 body { @apply bg-canvas text-ink-900 font-sans antialiased; }
 :focus-visible { outline: 3px solid var(--color-brand-700); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Atribusi OpenStreetMap pada peta: ukuran teks & area sentuh diperbesar dari bawaan Leaflet */
+.leaflet-container .leaflet-control-attribution { font-size: 12px; line-height: 1.9; padding: 3px 6px; }
+.leaflet-container .leaflet-control-attribution a { display: inline-block; padding: 3px 0; }

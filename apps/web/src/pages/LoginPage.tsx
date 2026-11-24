@@ -33,8 +33,8 @@ export function LoginPage() {
         {error ? <p role="alert" className="rounded-card bg-danger-50 p-3 text-danger-700">{error}</p> : null}
         <Button type="submit" disabled={busy}>{busy ? "Memproses…" : "Masuk"}</Button>
       </form>
-      <p className="mt-4 text-sm"><Link className="text-brand-700 underline" to="/lupa-kata-sandi">Lupa kata sandi?</Link></p>
-      <p className="mt-2 text-sm">Belum punya akun? <Link className="text-brand-700 underline" to="/daftar">Daftar</Link></p>
+      <p className="mt-4 text-sm"><Link className="inline-block py-1 text-brand-700 underline" to="/lupa-kata-sandi">Lupa kata sandi?</Link></p>
+      <p className="mt-2 text-sm">Belum punya akun? <Link className="inline-block py-1 text-brand-700 underline" to="/daftar">Daftar</Link></p>
     </main>
   );
 }

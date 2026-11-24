@@ -20,7 +20,8 @@ import { WomenPage } from "../pages/WomenPage";
 import { GrowPage } from "../pages/GrowPage";
 import { ElderPage } from "../pages/ElderPage";
 import { NutriPage } from "../pages/NutriPage";
-import { MapPage } from "../pages/MapPage";
+import { lazy, Suspense } from "react";
+const MapPage = lazy(() => import("../pages/MapPage").then((m) => ({ default: m.MapPage })));
 import { ConsentPage } from "../pages/ConsentPage";
 import { MedPage } from "../pages/MedPage";
 import { AdminManagePage } from "../pages/AdminManagePage";
@@ -37,7 +38,7 @@ export const router = createBrowserRouter([
   { path: "/edukasi", element: <EduPage /> },
   { path: "/edukasi/:slug", element: <ArticlePage /> },
   { path: "/kuis/:id", element: <QuizPage /> },
-  { path: "/peta", element: <MapPage /> },
+  { path: "/peta", element: <Suspense fallback={<p className="mx-auto max-w-3xl px-4 py-8">Peta sedang dimuat…</p>}><MapPage /></Suspense> },
   { path: "/beranda", element: <ProtectedRoute roles={["masyarakat", "nakes"]}><DashboardMasyarakat /></ProtectedRoute> },
   { path: "/akun", element: <ProtectedRoute roles={["masyarakat", "nakes", "admin", "super_admin"]}><AccountPage /></ProtectedRoute> },
   { path: "/skrining", element: <ProtectedRoute roles={["masyarakat"]}><ScreeningPage /></ProtectedRoute> },
