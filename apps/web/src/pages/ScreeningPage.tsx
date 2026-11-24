@@ -51,8 +51,11 @@ export function ScreeningPage() {
       <h2 className="mt-6 text-xl font-bold">Langkah Tindak Lanjut</h2>
       <ol className="mt-2 list-decimal flex flex-col gap-1 pl-5">{result.recommendations.map((r, i) => <li key={i}>{r}</li>)}</ol>
       <p className="mt-5 rounded-card bg-info-50 p-3 text-sm text-info-800">{result.disclaimer}</p>
-      <div className="mt-6 flex gap-3">
+      <div className="mt-6 flex flex-wrap gap-3">
         <Button onClick={() => navigate("/pantau")}>Lihat di Pantau</Button>
+        <Button variant="secondary" onClick={() => navigate("/tanya")}>Jelaskan Hasil Ini (Tanya AI)</Button>
+        <Button variant="secondary" onClick={() => navigate("/edukasi")}>Baca Edukasi Terkait</Button>
+        <Button variant="secondary" onClick={() => navigate("/pengingat")}>Buat Pengingat Kontrol</Button>
         <Button variant="secondary" onClick={() => { setResult(null); setSelected(null); setStep(0); }}>Skrining Lagi</Button>
       </div>
     </main>

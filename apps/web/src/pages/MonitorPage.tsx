@@ -70,7 +70,7 @@ export function MonitorPage() {
         {list.length ? <ul className="mt-3 flex flex-col gap-2">{list.map((m) => <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-white p-4">
           <span>{m.measured_at} — {m.systolic ? `TD ${m.systolic}/${m.diastolic} mmHg` : ""}{m.weight_kg ? ` • BB ${m.weight_kg} kg` : ""}{m.blood_sugar_mgdl ? ` • Gula ${m.blood_sugar_mgdl} mg/dL` : ""} <span className="text-sm text-ink-500">({m.source === "screening" ? "Skrining" : m.source === "manual" ? "Manual" : m.source})</span></span>
           <Button variant="secondary" onClick={() => correct(m)}>Koreksi</Button></li>)}</ul>
-          : <p className="mt-3 text-ink-600">Belum ada pengukuran tercatat.</p>}
+          : <p className="mt-3 text-ink-600">Belum ada pengukuran tercatat. <a href="/skrining" className="font-semibold text-brand-800 underline">Mulai dari skrining pertama</a> atau catat pengukuran manual pada formulir di bawah.</p>}
       </section>
     </main>
   );

@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
+// Ikon penanda CSS murni, dibuat sekali di tingkat modul. Ikon bawaan Leaflet
+// berupa berkas gambar yang jalurnya rusak saat dibundel Vite; dan ikon yang
+// dibuat di dalam komponen bisa bernilai undefined pada render ulang saat
+// data tiba — itulah penyebab crash "createIcon" di produksi (24 Nov 2026).
+const FACILITY_ICON = L.divIcon({ className: "siger-marker", html: "<span></span>", iconSize: [26, 26], iconAnchor: [13, 24], popupAnchor: [0, -24] });
 import { apiFetch, ApiClientError } from "../lib/api";
 import { apiMutate, useAuth } from "../lib/auth";
 import { Button } from "../components/ui/Button";
@@ -18,15 +24,10 @@ export function MapPage() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapObj = useRef<L.Map | null>(null);
   const markers = useRef<L.LayerGroup | null>(null);
-  let facilityIcon: L.DivIcon;
 
   useEffect(() => {
     if (!mapRef.current || mapObj.current) return;
     const map = L.map(mapRef.current).setView([-5.2, 105.1], 8);
-    // Ikon penanda CSS murni: ikon bawaan Leaflet berupa berkas gambar yang
-    // jalurnya rusak saat dibundel Vite (temuan verifikasi visual produksi
-    // 24 Nov 2026), jadi penanda digambar dengan CSS tanpa aset gambar.
-    facilityIcon = L.divIcon({ className: "siger-marker", html: "<span></span>", iconSize: [26, 26], iconAnchor: [13, 24], popupAnchor: [0, -24] });
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; kontributor OpenStreetMap", maxZoom: 19 }).addTo(map);
     mapObj.current = map; markers.current = L.layerGroup().addTo(map);
   }, []);
@@ -38,7 +39,7 @@ export function MapPage() {
     if (!markers.current || !mapObj.current) return;
     markers.current.clearLayers();
     for (const f of facilities) {
-      const m = L.marker([f.latitude, f.longitude], { icon: facilityIcon }).bindPopup(`<strong>${f.name}</strong><br/>${f.address}`);
+      const m = L.marker([f.latitude, f.longitude], { icon: FACILITY_ICON }).bindPopup(`<strong>${f.name}</strong><br/>${f.address}`);
       m.on("click", () => setSelected(f));
       markers.current.addLayer(m);
     }

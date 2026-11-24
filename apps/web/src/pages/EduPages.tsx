@@ -11,6 +11,7 @@ const CATEGORY_LABEL: Record<string, string> = { ptm: "Penyakit Tidak Menular", 
 
 export function EduPage() {
   const [articles, setArticles] = useState<ArticleListItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [category, setCategory] = useState("");
   const [q, setQ] = useState("");
@@ -20,7 +21,7 @@ export function EduPage() {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
     if (q) params.set("q", q);
-    apiFetch<ArticleListItem[]>(`/api/v1/edu/articles?${params}`).then(setArticles).catch(() => setError("Artikel tidak dapat dimuat."));
+    apiFetch<ArticleListItem[]>(`/api/v1/edu/articles?${params}`).then(setArticles).catch(() => setError("Artikel tidak dapat dimuat.")).finally(() => setLoading(false));
   }, [category, q]);
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -43,7 +44,8 @@ export function EduPage() {
           <p className="mt-2 text-sm text-ink-500">Sumber: {a.source_name} • {a.published_at}</p>
         </li>)}
       </ul>
-      {!articles.length && !error ? <p className="mt-6 text-ink-600">Tidak ada artikel yang cocok. Coba kata kunci atau kategori lain.</p> : null}
+      {loading ? <p className="mt-6 text-ink-600" aria-live="polite">Memuat artikel…</p> : null}
+      {!loading && !articles.length && !error ? <p className="mt-6 text-ink-600">Tidak ada artikel yang cocok. Coba kata kunci atau kategori lain.</p> : null}
     </main>
   );
 }
