@@ -28,6 +28,12 @@ export function DashboardMasyarakat() {
           <Button variant="secondary" onClick={async () => { await logout(); location.href = "/"; }}>Keluar</Button>
         </div>
       </header>
+      <nav aria-label="Modul utama" className="mt-6 flex flex-wrap gap-2">
+        <Link to="/skrining" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Periksa Risiko</Link>
+        <Link to="/pantau" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Catat &amp; Pantau</Link>
+        <Link to="/pengingat" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Pengingat</Link>
+        <Link to="/riwayat" className="rounded-full bg-brand-50 px-4 py-2 font-semibold text-brand-800">Riwayat</Link>
+      </nav>
       {error ? <p role="alert" className="mt-6 rounded-card bg-danger-50 p-4 text-danger-700">{error}</p> : null}
       {!data && !error ? <p className="mt-6" aria-live="polite">Memuat data Anda…</p> : null}
       {data ? <>

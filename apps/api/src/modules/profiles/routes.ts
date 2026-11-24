@@ -69,3 +69,21 @@ dashboardRoutes.get("/masyarakat", requireAuth, requireRole("masyarakat", "nakes
   const lastScreening = await c.env.DB.prepare("SELECT id, risk_category, completed_at FROM screening_sessions WHERE profile_id = ? AND status = 'completed' ORDER BY completed_at DESC LIMIT 1").bind(pid).first();
   return c.json({ data: { profile: { id: pid, full_name: profile.full_name }, latest_measurement: latest, recent_measurements: recentMeasurements, next_reminders: nextReminders, unread_notifications: unread?.n ?? 0, family_profiles: family, last_screening: lastScreening } });
 });
+
+// Riwayat kesehatan gabungan (butir 4 Tahap 6): pengukuran + skrining + imunisasi + kunjungan ANC,
+// digabung kronologis dari tabel nyata; jenis lain menyusul pada tahap modulnya.
+profilesRoutes.get("/history", async (c) => {
+  const actor = c.get("actor");
+  const profileId = c.req.query("profileId") ?? "";
+  const profile = await c.env.DB.prepare("SELECT id FROM health_profiles WHERE id = ? AND owner_user_id = ?").bind(profileId, actor.id).first();
+  if (!profile) throw notFound();
+  const db = c.env.DB;
+  const measurements = (await db.prepare("SELECT id, measured_at AS at, systolic, diastolic, weight_kg, blood_sugar_mgdl, bmi, source FROM measurements WHERE profile_id = ? ORDER BY measured_at DESC LIMIT 100").bind(profileId).all<Record<string, unknown>>()).results
+    .map((m) => ({ kind: "measurement", at: m.at, title: "Pengukuran", detail: m, id: m.id }));
+  const screenings = (await db.prepare("SELECT id, completed_at AS at, risk_category, has_danger_sign FROM screening_sessions WHERE profile_id = ? AND status = 'completed' ORDER BY completed_at DESC LIMIT 50").bind(profileId).all<Record<string, unknown>>()).results
+    .map((s) => ({ kind: "screening", at: s.at, title: "Skrining", detail: s, id: s.id }));
+  const immunizations = (await db.prepare("SELECT id, given_date AS at, vaccine_code, dose_number, facility_name FROM immunization_records WHERE profile_id = ? ORDER BY given_date DESC LIMIT 50").bind(profileId).all<Record<string, unknown>>()).results
+    .map((i) => ({ kind: "immunization", at: i.at, title: "Imunisasi", detail: i, id: i.id }));
+  const timeline = [...measurements, ...screenings, ...immunizations].sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  return c.json({ data: timeline });
+});

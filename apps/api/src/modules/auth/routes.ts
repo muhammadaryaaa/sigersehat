@@ -5,6 +5,7 @@ import { ApiError, notFound } from "../../domain/errors";
 import { isEmail, isDate, passwordProblem, requireString, validationError, type FieldError } from "../../lib/validate";
 import { hashPassword, newId, randomToken, sha256Hex } from "../../lib/crypto";
 import { logAudit } from "../../lib/audit";
+import { nowSql } from "../../lib/time";
 
 export const authRoutes = new Hono<{ Bindings: Env }>();
 
@@ -85,7 +86,7 @@ authRoutes.get("/sessions", requireAuth, async (c) => {
   const { results } = await c.env.DB.prepare(
     "SELECT id, device_label, ip_address, created_at, last_seen_at, expires_at, revoked_at, token_hash FROM sessions WHERE user_id = ? ORDER BY created_at DESC"
   ).bind(actor.id).all<Record<string, unknown>>();
-  return c.json({ data: results.map((r) => ({ ...r, token_hash: undefined, is_current: r.token_hash === currentHash, is_active: !r.revoked_at && String(r.expires_at) > new Date().toISOString() })) });
+  return c.json({ data: results.map((r) => ({ ...r, token_hash: undefined, is_current: r.token_hash === currentHash, is_active: !r.revoked_at && String(r.expires_at) > nowSql() })) });
 });
 
 authRoutes.delete("/sessions/:id", requireAuth, async (c) => {

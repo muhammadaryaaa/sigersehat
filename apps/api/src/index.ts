@@ -12,7 +12,7 @@ import { womenRoutes } from "./modules/women/routes";
 import { growRoutes } from "./modules/grow/routes";
 import { elderRoutes } from "./modules/elder/routes";
 import { nutriRoutes } from "./modules/nutri/routes";
-import { reminderRoutes } from "./modules/reminder/routes";
+import { reminderRoutes, notificationRoutes, generateDueNotifications } from "./modules/reminder/routes";
 import { mapRoutes } from "./modules/map/routes";
 import { medRoutes } from "./modules/med/routes";
 import { insightRoutes } from "./modules/insight/routes";
@@ -43,7 +43,7 @@ api.route("/screening", checkRoutes); api.route("/measurements", monitorRoutes);
 api.route("/ai", aiRoutes); api.route("/edu", eduRoutes);
 api.route("/women", womenRoutes); api.route("/grow", growRoutes);
 api.route("/elder", elderRoutes); api.route("/nutri", nutriRoutes);
-api.route("/reminders", reminderRoutes); api.route("/facilities", mapRoutes);
+api.route("/reminders", reminderRoutes); api.route("/notifications", notificationRoutes); api.route("/facilities", mapRoutes);
 api.route("/med", medRoutes); api.route("/insights", insightRoutes);
 api.route("/admin", adminRoutes); api.route("/dashboard", dashboardRoutes); api.route("/iot", iotRoutes);
 app.route("/api/v1", api);
@@ -55,5 +55,7 @@ app.notFound((c) => c.json({ error: { code: "not_found", message: "Rute tidak di
 export default {
   fetch: app.fetch,
   // Cron: notifikasi pengingat & snapshot INSIGHT (diimplementasikan pada tahap modulnya).
-  async scheduled(_event: ScheduledEvent, _env: Bindings, _ctx: ExecutionContext) {},
+  async scheduled(_event: ScheduledEvent, env: Bindings, _ctx: ExecutionContext) {
+    await generateDueNotifications(env.DB);
+  },
 };

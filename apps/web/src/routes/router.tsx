@@ -8,6 +8,10 @@ import { DashboardMasyarakat } from "../pages/DashboardMasyarakat";
 import { DashboardNakes } from "../pages/DashboardNakes";
 import { DashboardAdmin } from "../pages/DashboardAdmin";
 import { AccountPage } from "../pages/AccountPage";
+import { ScreeningPage } from "../pages/ScreeningPage";
+import { MonitorPage } from "../pages/MonitorPage";
+import { ReminderPage } from "../pages/ReminderPage";
+import { HistoryPage } from "../pages/HistoryPage";
 import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -20,8 +24,10 @@ export const router = createBrowserRouter([
   { path: "/peta", element: <PlaceholderPage title="Peta Fasilitas Kesehatan" /> },
   { path: "/beranda", element: <ProtectedRoute roles={["masyarakat", "nakes"]}><DashboardMasyarakat /></ProtectedRoute> },
   { path: "/akun", element: <ProtectedRoute roles={["masyarakat", "nakes", "admin", "super_admin"]}><AccountPage /></ProtectedRoute> },
-  { path: "/skrining", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Periksa Risiko" /></ProtectedRoute> },
-  { path: "/pantau", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Catat & Pantau" /></ProtectedRoute> },
+  { path: "/skrining", element: <ProtectedRoute roles={["masyarakat"]}><ScreeningPage /></ProtectedRoute> },
+  { path: "/pantau", element: <ProtectedRoute roles={["masyarakat"]}><MonitorPage /></ProtectedRoute> },
+  { path: "/pengingat", element: <ProtectedRoute roles={["masyarakat"]}><ReminderPage /></ProtectedRoute> },
+  { path: "/riwayat", element: <ProtectedRoute roles={["masyarakat"]}><HistoryPage /></ProtectedRoute> },
   { path: "/keluarga", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Keluargaku" /></ProtectedRoute> },
   { path: "/tanya", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Tanya SIGERAI" /></ProtectedRoute> },
   { path: "/izin", element: <ProtectedRoute roles={["masyarakat"]}><PlaceholderPage title="Izin & Privasi" /></ProtectedRoute> },

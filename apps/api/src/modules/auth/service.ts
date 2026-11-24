@@ -1,4 +1,5 @@
 import { hashPassword, verifyPassword, newId, randomToken, sha256Hex } from "../../lib/crypto";
+import { toSqlTime, nowSql } from "../../lib/time";
 import { logAudit } from "../../lib/audit";
 import { ApiError } from "../../domain/errors";
 import type { Role } from "@sigersehat/contracts";
@@ -10,7 +11,7 @@ export async function createSession(db: D1Database, userId: string, meta: { ip?:
   const token = randomToken(32);
   const tokenHash = await sha256Hex(token);
   const id = newId("ses");
-  const expires = new Date(Date.now() + SESSION_DAYS * 86400_000).toISOString();
+  const expires = toSqlTime(Date.now() + SESSION_DAYS * 86400_000);
   await db.prepare("INSERT INTO sessions (id, user_id, token_hash, device_label, ip_address, user_agent, expires_at) VALUES (?,?,?,?,?,?,?)")
     .bind(id, userId, tokenHash, meta.deviceLabel ?? null, meta.ip ?? null, meta.userAgent ?? null, expires).run();
   const csrf = randomToken(16);
@@ -45,7 +46,7 @@ export async function registerUser(db: D1Database, input: {
   const profileId = newId("prf");
   const statements = [
     db.prepare("INSERT INTO users (id, email, password_hash, role, email_verified_at) VALUES (?,?,?,?,?)")
-      .bind(userId, input.email, passwordHash, role, new Date().toISOString()),
+      .bind(userId, input.email, passwordHash, role, nowSql()),
     db.prepare("INSERT INTO health_profiles (id, owner_user_id, linked_user_id, relation, full_name, birth_date, sex, region_id) VALUES (?,?,?,?,?,?,?,?)")
       .bind(profileId, userId, userId, "self", input.fullName, input.birthDate, input.sex, input.regionId ?? null),
     db.prepare("INSERT INTO profile_preferences (profile_id) VALUES (?)").bind(profileId),
