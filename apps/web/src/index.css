@@ -34,3 +34,8 @@ body { @apply bg-canvas text-ink-900 font-sans antialiased; }
 /* Atribusi OpenStreetMap pada peta: ukuran teks & area sentuh diperbesar dari bawaan Leaflet */
 .leaflet-container .leaflet-control-attribution { font-size: 12px; line-height: 1.9; padding: 3px 6px; }
 .leaflet-container .leaflet-control-attribution a { display: inline-block; padding: 3px 0; }
+
+/* Penanda peta CSS murni (pengganti ikon gambar Leaflet yang rusak oleh bundler) */
+.siger-marker { background: transparent; border: none; }
+.siger-marker span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #166534; border: 3px solid #ffffff; box-shadow: 0 1px 5px rgba(0,0,0,.45); position: relative; }
+.siger-marker span::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: #ffffff; }
