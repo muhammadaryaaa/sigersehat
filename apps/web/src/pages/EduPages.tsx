@@ -8,7 +8,7 @@ import { PageHeader } from "../components/ui/PageHeader";
 
 type ArticleListItem = { id: string; slug: string; title: string; category: string; summary: string; source_name: string; published_at: string };
 type Category = { slug: string; published_count: number };
-const CATEGORY_LABEL: Record<string, string> = { ptm: "Penyakit Tidak Menular", gizi: "Gizi & Makanan", "ibu-anak": "Ibu & Anak", lansia: "Lansia", umum: "Kesehatan Umum" };
+const CATEGORY_LABEL: Record<string, string> = { ptm: "Penyakit Tidak Menular", gizi: "Gizi & Makanan", "ibu-anak": "Ibu & Anak", ibu_anak: "Ibu & Anak", lansia: "Lansia", umum: "Kesehatan Umum", imunisasi: "Imunisasi", program: "Program Kesehatan", tb: "Tuberkulosis", jiwa: "Kesehatan Jiwa", lingkungan: "Kesehatan Lingkungan" };
 
 export function EduPage() {
   const [articles, setArticles] = useState<ArticleListItem[]>([]);
@@ -57,6 +57,12 @@ const ARTICLE_PHOTO: Record<string, { src: string; alt: string; credit: string }
   gizi: { src: "pasar-sayur", alt: "Pedagang sayuran di pasar tradisional", credit: "Foto: Tyo Satriany (CC BY-SA 4.0), Wikimedia Commons." },
   ibu_anak: { src: "ibu-anak-timbang", alt: "Kader menimbang bayi dengan timbangan gantung di pos pelayanan", credit: "Foto: USAID Indonesia (domain publik), Wikimedia Commons." },
   imunisasi: { src: "posyandu", alt: "Kegiatan posyandu: ibu dan anak dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0), Wikimedia Commons." },
+  "ibu-anak": { src: "ibu-anak-timbang", alt: "Kader menimbang bayi dengan timbangan gantung di pos pelayanan", credit: "Foto: USAID Indonesia (domain publik), Wikimedia Commons." },
+  program: { src: "posyandu", alt: "Kegiatan posyandu: ibu dan anak dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0), Wikimedia Commons." },
+  tb: { src: "posyandu", alt: "Kegiatan posyandu: ibu dan anak dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0), Wikimedia Commons." },
+  jiwa: { src: "jalan-sehat", alt: "Warga berolahraga jalan sehat bersama di ruang terbuka", credit: "Foto: baka_neko_baka (CC BY 2.0), Wikimedia Commons." },
+  lingkungan: { src: "pantai-pahawang", alt: "Pemandangan pantai dan perairan jernih di Lampung", credit: "Foto: Fidelia Zheng (CC0), Wikimedia Commons." },
+  umum: { src: "jalan-sehat", alt: "Warga berolahraga jalan sehat bersama di ruang terbuka", credit: "Foto: baka_neko_baka (CC BY 2.0), Wikimedia Commons." },
 };
 
 export function ArticlePage() {

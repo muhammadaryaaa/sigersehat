@@ -14,6 +14,9 @@ type Article = { id: string; slug: string; title: string; summary: string; sourc
 const ARTICLE_PHOTO_BY_SLUG: Record<string, { src: string; alt: string; credit: string }> = {
   "cek-kesehatan-dan-skrining-ptm-di-posbindu": { src: "posyandu", alt: "Kegiatan pos pelayanan terpadu: warga dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0)" },
   "mengenal-hipertensi-dan-cara-mengendalikannya": { src: "jalan-sehat", alt: "Warga berjalan sehat bersama saat hari bebas kendaraan — aktivitas fisik rutin membantu mengendalikan tekanan darah", credit: "Foto: baka_neko_baka (CC BY 2.0)" },
+  "cek-kesehatan-gratis-2026-yang-baru": { src: "posyandu", alt: "Kegiatan pos pelayanan terpadu: warga dilayani kader", credit: "Foto: Kanoman123 (CC BY-SA 4.0)" },
+  "aktivitas-fisik-150-menit-seminggu": { src: "jalan-sehat", alt: "Warga berjalan sehat bersama saat hari bebas kendaraan", credit: "Foto: baka_neko_baka (CC BY 2.0)" },
+  "diabetes-melitus-mengenali-gula-darahmu": { src: "pasar-sayur", alt: "Pedagang sayuran di pasar tradisional — sayur dan serat membantu mengendalikan gula darah", credit: "Foto: Tyo Satriany (CC BY-SA 4.0)" },
 };
 const ARTICLE_PHOTO: Record<string, { src: string; alt: string; credit: string }> = {
   ptm: { src: "cek-tekanan-darah", alt: "Petugas kesehatan memeriksa tekanan darah warga", credit: "Foto: rawpixel.com (CC0)" },
