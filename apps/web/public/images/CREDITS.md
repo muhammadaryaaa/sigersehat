@@ -6,7 +6,7 @@ gambar placeholder. Setiap foto wajib ditampilkan bersama kredit sesuai lisensin
 
 | Nama file | Sumber (halaman sumber) | Penulis/Fotografer | Lisensi |
 |---|---|---|---|
-| menara-siger-480.webp, menara-siger-960.webp, menara-siger-1600.webp | https://commons.wikimedia.org/wiki/File:Port_of_Bakauheni_and_Siger_Tower.JPG | Sakurai Midori | CC BY 2.5 |
+| menara-siger-480.webp, menara-siger-960.webp, menara-siger-1380.webp | https://commons.wikimedia.org/wiki/File:Port_of_Bakauheni_and_Siger_Tower.JPG | Sakurai Midori | CC BY 2.5 |
 | kain-tapis-480.webp, kain-tapis-960.webp, kain-tapis-1600.webp | https://commons.wikimedia.org/wiki/File:Black_and_red_tapis.png | Crisco 1492 | CC BY-SA 3.0 |
 | pantai-pahawang-480.webp, pantai-pahawang-960.webp, pantai-pahawang-1600.webp | https://commons.wikimedia.org/wiki/File:Pahawang_Island,_Indonesia_(Unsplash).jpg | Fidelia Zheng | CC0 |
 | posyandu-480.webp, posyandu-960.webp, posyandu-1600.webp | https://commons.wikimedia.org/wiki/File:Kegiatan_Posyandu.jpg | Kanoman123 | CC BY-SA 4.0 |
@@ -18,7 +18,7 @@ gambar placeholder. Setiap foto wajib ditampilkan bersama kredit sesuai lisensin
 
 Catatan asal-usul foto:
 
-- **menara-siger**: Menara Siger dan Pelabuhan Bakauheni dilihat dari Selat Sunda, Lampung Selatan.
+- **menara-siger**: Menara Siger dan Pelabuhan Bakauheni dilihat dari Selat Sunda, Lampung Selatan. Foto DIPOTONG dari bingkai asli (modifikasi dinyatakan sesuai lisensi CC BY 2.5): potongan memusatkan Menara Siger dan membuang garis pantai yang memuat papan iklan rokok — tidak pantas tampil di platform kesehatan.
 - **kain-tapis**: kain tapis hitam-merah dengan sulaman benang emas dari Lampung (foto koleksi museum).
 - **pantai-pahawang**: pesisir Pulau Pahawang, Pesawaran, Lampung.
 - **posyandu**: kegiatan posyandu di Indonesia — ibu menggendong bayi berdiri di timbangan, kader bertugas di meja layanan.

@@ -56,8 +56,8 @@ export function LandingPage() {
             <p className="mt-4 text-sm text-ink-500">Skrining bersifat edukatif dan bukan diagnosis. Untuk keadaan darurat hubungi <a href="tel:119" className="font-bold text-accent-800 underline">119</a>.</p>
           </div>
           <figure>
-            <Img name="menara-siger" alt="Menara Siger dan Pelabuhan Bakauheni dilihat dari Selat Sunda, Lampung Selatan" w={1600} h={1071} eager className="aspect-[4/3] w-full rounded-card object-cover shadow-lift" />
-            <figcaption className="mt-2 text-xs text-ink-500">Menara Siger, Bakauheni — gerbang masuk Provinsi Lampung. Foto: Sakurai Midori (CC BY 2.5), Wikimedia Commons.</figcaption>
+            <img src="/images/menara-siger-960.webp" srcSet="/images/menara-siger-480.webp 480w, /images/menara-siger-960.webp 960w, /images/menara-siger-1380.webp 1380w" sizes="(max-width: 768px) 100vw, 50vw" width={1380} height={480} alt="Menara Siger di atas bukit hijau di Bakauheni, Lampung Selatan" loading="eager" fetchPriority="high" className="aspect-[4/3] w-full rounded-card object-cover shadow-lift" />
+            <figcaption className="mt-2 text-xs text-ink-500">Menara Siger, Bakauheni — gerbang masuk Provinsi Lampung. Foto: Sakurai Midori (CC BY 2.5), Wikimedia Commons, dipotong dari bingkai asli.</figcaption>
           </figure>
         </div>
       </section>
