@@ -20,17 +20,19 @@ export async function createSession(db: D1Database, userId: string, meta: { ip?:
 
 export function sessionCookies(env: Env, token: string, csrf: string): string[] {
   const secure = env.APP_ENV === "local" ? "" : "; Secure";
+  const sameSite = env.APP_ENV === "local" ? "Lax" : "None";
   const maxAge = SESSION_DAYS * 86400;
   return [
-    `siger_session=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${maxAge}${secure}`,
-    `csrf_token=${csrf}; Path=/; SameSite=Lax; Max-Age=${maxAge}${secure}`,
+    `siger_session=${token}; HttpOnly; Path=/; SameSite=${sameSite}; Max-Age=${maxAge}${secure}`,
+    `csrf_token=${csrf}; Path=/; SameSite=${sameSite}; Max-Age=${maxAge}${secure}`,
   ];
 }
 export function clearCookies(env: Env): string[] {
   const secure = env.APP_ENV === "local" ? "" : "; Secure";
+  const sameSite = env.APP_ENV === "local" ? "Lax" : "None";
   return [
-    `siger_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0${secure}`,
-    `csrf_token=; Path=/; SameSite=Lax; Max-Age=0${secure}`,
+    `siger_session=; HttpOnly; Path=/; SameSite=${sameSite}; Max-Age=0${secure}`,
+    `csrf_token=; Path=/; SameSite=${sameSite}; Max-Age=0${secure}`,
   ];
 }
 
