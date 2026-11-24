@@ -54,7 +54,7 @@ export function ReminderPage() {
       <section aria-labelledby="mendatang" className="mt-8">
         <h2 id="mendatang" className="text-xl font-bold">Mendatang &amp; Jatuh Tempo</h2>
         {upcoming.length ? <ul className="mt-3 flex flex-col gap-2">{upcoming.map((r) => <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-white p-4">
-          <span><strong>{r.title}</strong> — {r.scheduled_at} <span className="text-sm text-ink-500">({r.status === "sent" ? "Jatuh tempo" : r.status === "snoozed" ? "Ditunda" : "Terjadwal"})</span></span>
+          <span><strong>{r.title}</strong> — {formatDateTime(r.scheduled_at)} <span className="text-sm text-ink-500">({r.status === "sent" ? "Jatuh tempo" : r.status === "snoozed" ? "Ditunda" : "Terjadwal"})</span></span>
           <span className="flex flex-wrap gap-2"><Button variant="secondary" onClick={() => act(r.id, "snooze")}>Tunda 1 Hari</Button><Button onClick={() => act(r.id, "done")}>Selesai</Button><Button variant="danger" onClick={() => act(r.id, "cancel")}>Batalkan</Button></span></li>)}</ul>
           : <p className="mt-3 text-ink-600">Tidak ada pengingat aktif.</p>}
       </section>
