@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Activity, Baby, Bell, BookOpen, ChevronDown, CircleHelp, ClipboardCheck, Cpu, Heart, History, Home, LogOut, MapPin, Menu, MessagesSquare, PhoneCall, Salad, Settings, ShieldCheck, UserRound, Users, X } from "lucide-react";
+import { Activity, Baby, Bell, BookOpen, ChevronDown, CircleHelp, ClipboardCheck, Cpu, Heart, HeartPulse, History, Home, LogOut, MapPin, Menu, MessagesSquare, PhoneCall, Salad, Settings, ShieldCheck, UserRound, Users, X } from "lucide-react";
 import { useAuth } from "../../lib/auth";
 import { apiFetch } from "../../lib/api";
 import { SigerMark } from "./SigerMark";
@@ -13,32 +13,65 @@ import { SigerMark } from "./SigerMark";
 type NavItem = { to: string; label: string; icon: typeof Home };
 type NavGroup = { title: string; items: NavItem[] };
 
-const GROUPS_MASYARAKAT: NavGroup[] = [
-  { title: "Menu Utama", items: [
-    { to: "/beranda", label: "Beranda", icon: Home },
-    { to: "/skrining", label: "Periksa Risiko", icon: ClipboardCheck },
-    { to: "/pantau", label: "Catat & Pantau", icon: Activity },
-    { to: "/edukasi", label: "Edukasi", icon: BookOpen },
-    { to: "/tanya", label: "Tanya AI", icon: MessagesSquare },
-    { to: "/peta", label: "Peta Faskes", icon: MapPin },
-    { to: "/notifikasi", label: "Notifikasi", icon: Bell },
-  ] },
-  { title: "Kesehatan Keluarga", items: [
-    { to: "/keluarga", label: "Keluarga", icon: Users },
-    { to: "/perempuan", label: "Perempuan", icon: Heart },
-    { to: "/tumbuh", label: "Tumbuh Kembang", icon: Baby },
-    { to: "/lansia", label: "Lansia", icon: UserRound },
-    { to: "/gizi", label: "Gizi Harian", icon: Salad },
-    { to: "/pengingat", label: "Pengingat", icon: Bell },
-    { to: "/riwayat", label: "Riwayat", icon: History },
-  ] },
-  { title: "Akun & Lainnya", items: [
-    { to: "/izin", label: "Izin & Nakes", icon: ShieldCheck },
-    { to: "/iot", label: "Perangkat IoT", icon: Cpu },
-    { to: "/akun", label: "Pengaturan", icon: Settings },
-    { to: "/bantuan", label: "Bantuan", icon: CircleHelp },
-  ] },
+// Navigasi masyarakat mengikuti susunan referensi dashboard: daftar datar,
+// dengan modul layanan khusus di dalam grup "Layanan Kesehatan" yang dapat
+// diperluas — seluruh modul tetap dapat ditemukan (ketentuan Master Prompt 6).
+const MASYARAKAT_ATAS: NavItem[] = [
+  { to: "/beranda", label: "Beranda", icon: Home },
+  { to: "/keluarga", label: "Profil Kesehatan", icon: UserRound },
+  { to: "/pantau", label: "Pemantauan Kesehatan", icon: Activity },
+  { to: "/edukasi", label: "Edukasi", icon: BookOpen },
 ];
+const LAYANAN_ITEMS: NavItem[] = [
+  { to: "/skrining", label: "Periksa Risiko", icon: ClipboardCheck },
+  { to: "/perempuan", label: "Kesehatan Perempuan", icon: Heart },
+  { to: "/tumbuh", label: "Tumbuh Kembang", icon: Baby },
+  { to: "/lansia", label: "Lansia", icon: Users },
+  { to: "/gizi", label: "Gizi Harian", icon: Salad },
+  { to: "/pengingat", label: "Pengingat", icon: Bell },
+  { to: "/riwayat", label: "Riwayat", icon: History },
+  { to: "/izin", label: "Izin & Nakes", icon: ShieldCheck },
+  { to: "/iot", label: "Perangkat IoT", icon: Cpu },
+];
+const MASYARAKAT_BAWAH: NavItem[] = [
+  { to: "/peta", label: "Peta Fasilitas", icon: MapPin },
+  { to: "/tanya", label: "AI Assistant", icon: MessagesSquare },
+  { to: "/notifikasi", label: "Notifikasi", icon: Bell },
+  { to: "/akun", label: "Pengaturan", icon: Settings },
+  { to: "/bantuan", label: "Bantuan", icon: CircleHelp },
+];
+function navLinkClass(isActive: boolean) {
+  return `flex min-h-11 items-center gap-2.5 rounded-xl px-3 text-[15px] font-semibold transition-colors ${isActive ? "bg-brand-600 text-white shadow-card" : "text-ink-600 hover:bg-brand-50 hover:text-ink-900"}`;
+}
+function MasyarakatNav({ unread, onNavigate }: { unread: number; onNavigate?: () => void }) {
+  const routeLoc = useLocation();
+  const childActive = LAYANAN_ITEMS.some((it) => routeLoc.pathname.startsWith(it.to));
+  const [open, setOpen] = useState(childActive);
+  useEffect(() => { if (childActive) setOpen(true); }, [childActive]);
+  const renderItem = (it: NavItem, indent = false) => (
+    <li key={it.to}>
+      <NavLink to={it.to} onClick={onNavigate} className={({ isActive }) => `${navLinkClass(isActive)} ${indent ? "ml-4 min-h-10 text-sm" : ""}`}>
+        <it.icon size={19} aria-hidden="true" /> {it.label}
+        {it.to === "/notifikasi" && unread > 0 ? <span className="ml-auto inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-danger-700 px-1 text-[11px] font-bold text-white">{unread}</span> : null}
+      </NavLink>
+    </li>
+  );
+  return (
+    <nav aria-label="Navigasi layanan">
+      <ul className="flex flex-col gap-0.5">
+        {MASYARAKAT_ATAS.map((it) => renderItem(it))}
+        <li>
+          <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={`${navLinkClass(childActive)} w-full`}>
+            <HeartPulse size={19} aria-hidden="true" /> Layanan Kesehatan
+            <ChevronDown size={17} aria-hidden="true" className={`ml-auto transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+          {open ? <ul className="mt-0.5 flex flex-col gap-0.5 border-l border-line ml-5 pl-1">{LAYANAN_ITEMS.map((it) => renderItem(it, true))}</ul> : null}
+        </li>
+        {MASYARAKAT_BAWAH.map((it) => renderItem(it))}
+      </ul>
+    </nav>
+  );
+}
 const GROUPS_NAKES: NavGroup[] = [
   { title: "Menu Utama", items: [
     { to: "/nakes/beranda", label: "Beranda Nakes", icon: Home },
@@ -119,7 +152,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   const role = me?.user?.role;
   const home = me ? (role === "nakes" ? "/nakes/beranda" : role === "admin" || role === "super_admin" ? "/admin/beranda" : "/beranda") : "/";
-  const groups = !me ? null : role === "nakes" ? GROUPS_NAKES : role === "admin" || role === "super_admin" ? GROUPS_ADMIN : GROUPS_MASYARAKAT;
+  const groups = !me ? null : role === "nakes" ? GROUPS_NAKES : role === "admin" || role === "super_admin" ? GROUPS_ADMIN : null;
   const fullName = me?.profile?.full_name ?? "Pengguna";
 
   const footer = (
@@ -160,7 +193,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     </>
   );
 
-  if (!me || !groups) {
+  if (!me) {
     return (
       <div className="min-h-screen bg-canvas">
         <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
@@ -196,7 +229,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const sidebarInner = (
     <>
       <Link to={home} aria-label="SIGERSEHAT — beranda" className="px-1"><SigerMark tagline /></Link>
-      <div className="mt-6 flex-1 overflow-y-auto pr-1"><SidebarNav groups={groups} unread={unread} onNavigate={() => setDrawer(false)} /></div>
+      <div className="mt-6 flex-1 overflow-y-auto pr-1">{groups ? <SidebarNav groups={groups} unread={unread} onNavigate={() => setDrawer(false)} /> : <MasyarakatNav unread={unread} onNavigate={() => setDrawer(false)} />}</div>
       {role === "masyarakat" ? (
         <div className="relative mt-5 overflow-hidden rounded-card shadow-card">
           <img src="/images/menara-siger-480.webp" alt="" width={480} height={320} loading="lazy" className="h-32 w-full object-cover" />
@@ -231,7 +264,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button type="button" onClick={() => setDrawer(true)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-btn hover:bg-brand-50 lg:hidden" aria-label="Buka menu navigasi"><Menu size={22} aria-hidden="true" /></button>
             <Link to={home} className="lg:hidden" aria-label="SIGERSEHAT — beranda"><SigerMark compact /></Link>
             <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-              <a href="tel:119" className="hidden min-h-10 items-center gap-1.5 rounded-btn px-2 text-sm font-bold text-danger-700 md:inline-flex"><PhoneCall size={16} aria-hidden="true" /> Darurat 119</a>
               <Link to="/notifikasi" aria-label={unread ? `Notifikasi, ${unread} belum dibaca` : "Notifikasi"} className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-brand-50">
                 <Bell size={21} aria-hidden="true" />
                 {unread > 0 ? <span className="absolute right-1 top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-danger-700 px-1 text-[11px] font-bold text-white">{unread}</span> : null}
