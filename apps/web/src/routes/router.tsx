@@ -27,6 +27,8 @@ import { MedPage } from "../pages/MedPage";
 import { AdminManagePage } from "../pages/AdminManagePage";
 import { InsightPage } from "../pages/InsightPage";
 import { IotPage } from "../pages/IotPage";
+import { NotificationsPage } from "../pages/NotificationsPage";
+import { HelpPage } from "../pages/HelpPage";
 import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 import { AppShell } from "../components/ui/AppShell";
 import { AboutPage, ServiceLimitsPage, PrivacyPage } from "../pages/InfoPages";
@@ -45,6 +47,8 @@ export const router = createBrowserRouter([
   { path: "/kuis/:id", element: <AppShell><QuizPage /></AppShell> },
   { path: "/peta", element: <AppShell><Suspense fallback={<p className="mx-auto max-w-3xl px-4 py-8">Peta sedang dimuat…</p>}><MapPage /></Suspense></AppShell> },
   { path: "/beranda", element: <ProtectedRoute locked={{ title: "Beranda Saya", description: "Ringkasan kesehatanmu hari ini.", points: ["Hasil skrining terakhir dan tren singkatmu", "Pengingat terdekat dan jalan pintas ke semua layanan"] }} roles={["masyarakat", "nakes"]}><AppShell><DashboardMasyarakat /></AppShell></ProtectedRoute> },
+  { path: "/notifikasi", element: <ProtectedRoute roles={["masyarakat", "nakes", "admin", "super_admin"]}><AppShell><NotificationsPage /></AppShell></ProtectedRoute> },
+  { path: "/bantuan", element: <AppShell><HelpPage /></AppShell> },
   { path: "/akun", element: <ProtectedRoute roles={["masyarakat", "nakes", "admin", "super_admin"]}><AppShell><AccountPage /></AppShell></ProtectedRoute> },
   { path: "/skrining", element: <AppShell><ScreeningPage /></AppShell> },
   { path: "/pantau", element: <ProtectedRoute locked={{ title: "Catat & Pantau", description: "Catatan tekanan darah, gula darah, dan berat badanmu beserta grafik trennya.", points: ["Catatan pengukuran tersimpan dan dapat dikoreksi, bukan dihapus diam-diam", "Grafik tren dari datamu sendiri, bukan data contoh", "Ekspor rekap untuk dibawa ke tenaga kesehatan"] }} roles={["masyarakat"]}><AppShell><MonitorPage /></AppShell></ProtectedRoute> },

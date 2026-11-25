@@ -9,7 +9,8 @@ export function formatDateTime(value: string | null | undefined): string {
 }
 export function formatDate(value: string | null | undefined): string {
   if (!value) return "-";
-  const d = new Date(value.includes("T") ? value : value + "T00:00:00");
+  const datePart = value.includes("T") ? value : value.split(" ")[0];
+  const d = new Date(datePart + "T00:00:00");
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 }

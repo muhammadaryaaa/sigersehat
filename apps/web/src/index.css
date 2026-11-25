@@ -18,15 +18,20 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
-  --font-display: "Lora", "Georgia", serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
 
-  /* Warna fungsional kesehatan: hijau teal tua */
-  --color-brand-800: #0c4a42;
-  --color-brand-700: #0e5a4f;
-  --color-brand-600: #12705f;
-  --color-brand-50: #e9f3ef;
+  /* Warna utama: biru layanan kesehatan digital (referensi dashboard SIGERSEHAT) */
+  --color-brand-800: #12497f;
+  --color-brand-700: #175db4;
+  --color-brand-600: #1d74db;
+  --color-brand-50: #eaf3fd;
 
-  /* Aksen tapis: merah marun */
+  /* Hijau kesehatan: status positif & indikator sehat */
+  --color-health-700: #177a4c;
+  --color-health-600: #1e9e62;
+  --color-health-50: #e7f6ee;
+
+  /* Aksen Lampung: marun tapis (dipakai terbatas: pita tapis, aksen budaya) */
   --color-accent-800: #711c2a;
   --color-accent-700: #822333;
   --color-accent-600: #973048;
@@ -45,18 +50,18 @@
   --color-danger-700: #b91c1c;
   --color-danger-50: #fef2f2;
 
-  /* Netral hangat */
-  --color-ink-900: #1d1912;
-  --color-ink-600: #55504a;
-  --color-ink-500: #6e675e;
-  --color-line: #e3dccb;
-  --color-canvas: #faf6ed;
-  --color-cream: #f4edde;
+  /* Netral sejuk */
+  --color-ink-900: #152a42;
+  --color-ink-600: #4a5b6c;
+  --color-ink-500: #6b7c8c;
+  --color-line: #dee8f0;
+  --color-canvas: #f3f7fb;
+  --color-cream: #e9f1f8;
 
-  --radius-btn: 8px;
-  --radius-card: 12px;
-  --shadow-card: 0 1px 2px rgba(29, 25, 18, 0.06), 0 1px 3px rgba(29, 25, 18, 0.05);
-  --shadow-lift: 0 4px 14px rgba(29, 25, 18, 0.1);
+  --radius-btn: 10px;
+  --radius-card: 16px;
+  --shadow-card: 0 1px 2px rgba(21, 42, 66, 0.05), 0 2px 8px rgba(21, 42, 66, 0.05);
+  --shadow-lift: 0 8px 24px rgba(21, 42, 66, 0.12);
 
   /* Token gerak: durasi & easing seragam untuk seluruh situs */
   --dur-fast: 150ms;
@@ -122,5 +127,5 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -0.01em; }
 
 /* Penanda peta CSS murni (pengganti ikon gambar Leaflet yang rusak oleh bundler) */
 .siger-marker { background: transparent; border: none; }
-.siger-marker span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #0c4a42; border: 3px solid #ffffff; box-shadow: 0 1px 5px rgba(0,0,0,.45); position: relative; }
+.siger-marker span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #1d74db; border: 3px solid #ffffff; box-shadow: 0 1px 5px rgba(0,0,0,.45); position: relative; }
 .siger-marker span::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: #ffffff; }

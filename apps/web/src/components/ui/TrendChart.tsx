@@ -17,8 +17,8 @@ export function TrendChart({ points, unit, label }: { points: Point[]; unit: str
         <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="#94a3b8" />
         <text x={4} y={y(max) + 4} fontSize="12" fill="#475569">{max}</text>
         <text x={4} y={y(min) + 4} fontSize="12" fill="#475569">{min}</text>
-        <path d={path} fill="none" stroke="#16a34a" strokeWidth="2.5" />
-        {points.map((p, i) => <circle key={i} cx={x(i)} cy={y(p.value)} r="4" fill="#166534"><title>{`${p.measured_at}: ${p.value} ${unit}`}</title></circle>)}
+        <path d={path} fill="none" stroke="#1d74db" strokeWidth="2.5" />
+        {points.map((p, i) => <circle key={i} cx={x(i)} cy={y(p.value)} r="4" fill="#175db4"><title>{`${p.measured_at}: ${p.value} ${unit}`}</title></circle>)}
       </svg>
       <figcaption className="text-sm text-ink-600">{label} ({unit}) — {points.length} pengukuran. Nilai terakhir {values[values.length - 1]} {unit}.</figcaption>
       <details className="mt-2">
